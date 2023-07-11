@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "exerevnetes"
+version = "0.1.0"
+description = "Another auto machine learning implementation"
+authors = ["carnivore7777 <antgiannoulopoulos@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+sklearn = "^0.0.post5"
+pandas = "^2.0.3"
+ipykernel = "^6.24.0"
+toml = "^0.10.2"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
