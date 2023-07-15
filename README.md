@@ -8,9 +8,9 @@ Clone the repository locally
 git clone git@github.com:carnivore7777/exerevnetes.git
 ```
 Install poetry
-```
+
 Head over to [Poetry official webpage](https://python-poetry.org/docs/) and follow the installation instructions
-```
+
 Install the dependencies and the poetry environment by running
 ```
 poetry install
