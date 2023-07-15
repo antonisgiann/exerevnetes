@@ -22,7 +22,7 @@ setup(
     url="https://github.com/carnivore7777/exerevnetes",
     packages=find_packages(),
     install_requires=[
-        "sklearn",
+        "scikit-learn",
         "pandas",
         "skopt"
     ]
