@@ -24,7 +24,8 @@ This is an open source project and I welcome any contributions - ideas
 
 1. Clone the repository locally
 ```
-git clone git@github.com:carnivore7777/exerevnetes.git
+ssh -> git clone git@github.com:carnivore7777/exerevnetes.git
+https -> git clone https://github.com/carnivore7777/exerevnetes.git
 ```
 2. Install poetry for the python environment
 
