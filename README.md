@@ -23,9 +23,14 @@ This is an open source project and I welcome any contributions - ideas
 ### Local Setup - Development
 
 1. Clone the repository locally
+
+<b>ssh</b>
 ```
-ssh -> git clone git@github.com:carnivore7777/exerevnetes.git
-https -> git clone https://github.com/carnivore7777/exerevnetes.git
+git clone git@github.com:carnivore7777/exerevnetes.git
+```
+<b>https</b>
+```
+git clone https://github.com/carnivore7777/exerevnetes.git
 ```
 2. Install poetry for the python environment
 
