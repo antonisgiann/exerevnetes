@@ -24,7 +24,8 @@ setup(
     install_requires=[
         "scikit-learn",
         "pandas",
-        "skopt"
+        "skopt",
+        "tqdm"
     ]
 )
 
