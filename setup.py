@@ -24,8 +24,8 @@ setup(
     install_requires=[
         "scikit-learn",
         "pandas",
-        "skopt",
-        "tqdm"
+        "catboost",
+        "xgboost"
     ]
 )
 

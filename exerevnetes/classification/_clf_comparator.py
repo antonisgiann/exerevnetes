@@ -4,9 +4,14 @@ import pandas as pd
 from sklearn.ensemble import RandomForestClassifier, ExtraTreesClassifier
 from sklearn.svm import SVC
 from sklearn.linear_model import LogisticRegression
+from sklearn.gaussian_process import GaussianProcessClassifier
+from sklearn.naive_bayes import GaussianNB
 
 from sklearn.model_selection import cross_val_predict
 from sklearn.metrics import f1_score, recall_score, precision_score, roc_auc_score, accuracy_score
+
+from catboost import CatBoostClassifier
+from xgboost import XGBClassifier
 
 from exerevnetes.utils import time_format
 
@@ -15,7 +20,10 @@ default_classifiers = {
     "random_forest": RandomForestClassifier(),
     "extra_tree": ExtraTreesClassifier(),
     "logistic_reg": LogisticRegression(),
-    "svc": SVC()
+    "svc": SVC(),
+    "catboost": CatBoostClassifier(verbose=False),
+    "xgboost": XGBClassifier(),
+    "naive_bayes": GaussianNB()
 }
 
 metric_func = [
