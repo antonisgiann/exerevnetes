@@ -1,10 +1,10 @@
 import time
 import pandas as pd
+from IPython.display import display
 
 from sklearn.ensemble import RandomForestClassifier, ExtraTreesClassifier
 from sklearn.svm import SVC
 from sklearn.linear_model import LogisticRegression
-from sklearn.gaussian_process import GaussianProcessClassifier
 from sklearn.naive_bayes import GaussianNB
 
 from sklearn.model_selection import cross_val_predict
@@ -43,17 +43,19 @@ class BinaryClassifierComparator:
         self.metrics = {}
     
     def run(self):
-        print("The comparator has started...")
+        print(f"The comparator has started...\nRunning for {len(self.classifiers)} classifiers")
         initial_time = time.time()
-        for clf_name, clf in self.classifiers.items():
-            print(f"Running cross validation for {clf_name}...")
+        for i, (clf_name, clf) in enumerate(self.classifiers.items()):
+            print(f"Running cross validation for {i+1}. {clf_name}...", end="")
             clf_time = time.time()
             preds = cross_val_predict(clf, self.X, self.y, cv=self.cv)
             cv_time = time.time() - clf_time
             self.metrics[clf_name] = {"cv_time": cv_time}
+            print((15 - len(clf_name))*" ",f"training time: {time_format(cv_time)}")
             self.calculate_scores(clf_name, preds)
         print(f"Total comparator time {time_format(time.time() - initial_time)}")
         self.format_metrics()
+        display(self.metrics)
 
     def calculate_scores(self, clf_name, preds):
         for m in metric_func:
