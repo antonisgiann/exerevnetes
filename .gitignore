@@ -1,5 +1,6 @@
 # Ignore catboost files
 tests/catboost_info/*
+exerevnetes/classification/tests/catboost_info/*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
