@@ -1,5 +1,6 @@
 import time
 import pandas as pd
+from collections import Counter
 from IPython.display import display
 
 from sklearn.ensemble import RandomForestClassifier, ExtraTreesClassifier
@@ -43,6 +44,8 @@ class BinaryClassifierComparator:
         self.metrics = {}
     
     def run(self):
+        if len(Counter(self.y)) < 2:
+            raise ValueError("Expected 2 classes but got less in y_true")
         print(f"The comparator has started...\nRunning for {len(self.classifiers)} classifiers")
         initial_time = time.time()
         for i, (clf_name, clf) in enumerate(self.classifiers.items()):
