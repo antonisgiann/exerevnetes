@@ -3,6 +3,7 @@ import numpy as np
 
 from .._clf_comparator import BinaryClassifierComparator
 from sklearn.datasets import make_classification
+from sklearn.metrics import f1_score, roc_auc_score
 
 
 np.random.seed(47)
@@ -56,3 +57,11 @@ def test_if_run():
     with pytest.raises(AssertionError) as exce:
         cmp.get_metrics()
     assert str(exce.value) == "There are no metrics to be shown, you need to run the comparator first."
+
+
+@pytest.mark.parametrize("metric_funcs, expected", [([f1_score, roc_auc_score], 3), ([roc_auc_score], 2)])
+def test_number_of_metrics(metric_funcs, expected):
+    """testing the number of metrics"""
+    cmp = BinaryClassifierComparator(X, y, metric_funcs=metric_funcs)
+    cmp.run()
+    assert cmp.get_metrics().shape[1] == expected
