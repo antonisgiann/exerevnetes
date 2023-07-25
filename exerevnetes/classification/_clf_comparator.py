@@ -27,7 +27,7 @@ default_classifiers = {
     "naive_bayes": GaussianNB()
 }
 
-metric_func = [
+default_metric_funcs = [
     f1_score,
     recall_score,
     precision_score,
@@ -36,7 +36,7 @@ metric_func = [
 ]
 
 class BinaryClassifierComparator:
-    def __init__(self, X, y, classifiers: dict = default_classifiers, cv=10):
+    def __init__(self, X, y, classifiers: dict = default_classifiers, cv=10, metric_funcs: list = default_metric_funcs):
         self.X = X
         self.n_classes = len(Counter(y))
         if self.n_classes != 2:
@@ -44,6 +44,7 @@ class BinaryClassifierComparator:
         self.y = y
         self.classifiers = classifiers
         self.cv = cv
+        self.metric_funcs = metric_funcs
         self._metrics = {}
     
     def run(self):
@@ -64,7 +65,7 @@ class BinaryClassifierComparator:
         display(self._metrics)
 
     def __calculate_scores(self, clf_name, preds):
-        for m in metric_func:
+        for m in self.metric_funcs:
             self._metrics[clf_name][m.__name__] = m(self.y, preds)
 
     def __format_metrics(self):
