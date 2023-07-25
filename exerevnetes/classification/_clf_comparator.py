@@ -18,8 +18,8 @@ from exerevnetes.utils import time_format
 
 
 default_classifiers = {
-    "random_forest": RandomForestClassifier(),
-    "extra_tree": ExtraTreesClassifier(),
+    "random_forest": RandomForestClassifier(n_jobs=-1),
+    "extra_tree": ExtraTreesClassifier(n_jobs=-1),
     "logistic_reg": LogisticRegression(),
     "svc": SVC(),
     "catboost": CatBoostClassifier(verbose=False, allow_writing_files=False),
@@ -36,7 +36,7 @@ default_metric_funcs = [
 ]
 
 class BinaryClassifierComparator:
-    def __init__(self, X, y, classifiers: dict = default_classifiers, cv=10, metric_funcs: list = default_metric_funcs):
+    def __init__(self, X, y, classifiers: dict = default_classifiers, cv=5, metric_funcs: list = default_metric_funcs):
         self.X = X
         self.n_classes = len(Counter(y))
         if self.n_classes != 2:

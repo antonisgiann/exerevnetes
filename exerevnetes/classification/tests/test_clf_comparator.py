@@ -4,6 +4,9 @@ import numpy as np
 from .._clf_comparator import BinaryClassifierComparator
 from sklearn.datasets import make_classification
 from sklearn.metrics import f1_score, roc_auc_score
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.preprocessing import StandardScaler
+from sklearn.pipeline import Pipeline
 
 
 np.random.seed(47)
@@ -65,3 +68,19 @@ def test_number_of_metrics(metric_funcs, expected):
     cmp = BinaryClassifierComparator(X, y, metric_funcs=metric_funcs)
     cmp.run()
     assert cmp.get_metrics().shape[1] == expected
+
+
+@pytest.mark.parametrize(
+    "classifiers, expected",
+    [
+        ({
+            "pipe":Pipeline(
+            steps=[("scaler", StandardScaler()), ("model", RandomForestClassifier(n_jobs=-1))])
+        }, 1)
+    ]
+)
+def test_pipeline(classifiers, expected):
+    """test the output of passing a pipeline for classifiers"""
+    cmp = BinaryClassifierComparator(X, y, classifiers=classifiers)
+    cmp.run()
+    assert cmp.get_metrics().shape[0] == 1
