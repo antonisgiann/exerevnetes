@@ -30,7 +30,7 @@ def test_default_metrics_size(X, y, cv, expected):
     """test the size of the metrics dataframe"""
     cmp = BinaryClassifierComparator(X, y, cv=cv)
     cmp.run()
-    assert cmp.metrics.shape == expected
+    assert cmp.get_metrics().shape == expected
 
 
 @pytest.mark.parametrize(
@@ -47,3 +47,12 @@ def test_n_class(X, y):
     assert str(exce.value).startswith("Expected 2 classes but got")
 
 
+def test_if_run():
+    """test if comparator was run before getting the best classifier"""
+    cmp = BinaryClassifierComparator(X, y)
+    with pytest.raises(AssertionError) as exce:
+        cmp.best_clf()
+    assert str(exce.value) == "There are no models to compare, you need to run the comparator first."
+    with pytest.raises(AssertionError) as exce:
+        cmp.get_metrics()
+    assert str(exce.value) == "There are no metrics to be shown, you need to run the comparator first."
