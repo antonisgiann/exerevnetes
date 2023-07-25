@@ -44,10 +44,9 @@ class BinaryClassifierComparator:
         self.y = y
         self.classifiers = classifiers
         self.cv = cv
-        self.metrics = {}
+        self._metrics = {}
     
     def run(self):
-        
         print(f"The comparator has started...\nRunning for {len(self.classifiers)} classifiers")
         initial_time = time.time()
         for i, (clf_name, clf) in enumerate(self.classifiers.items()):
@@ -55,23 +54,26 @@ class BinaryClassifierComparator:
             clf_time = time.time()
             preds = cross_val_predict(clf, self.X, self.y, cv=self.cv)
             cv_time = time.time() - clf_time
-            self.metrics[clf_name] = {"cv_time": cv_time}
+            self._metrics[clf_name] = {"cv_time": cv_time}
             print((15 - len(clf_name))*" ",f"training time: {time_format(cv_time)}")
-            self.calculate_scores(clf_name, preds)
+            self.__calculate_scores(clf_name, preds)
 
         # print times and metrics
         print(f"Total comparator time {time_format(time.time() - initial_time)}")
-        self.format_metrics()
-        display(self.metrics)
+        self.__format_metrics()
+        display(self._metrics)
 
-    def calculate_scores(self, clf_name, preds):
+    def __calculate_scores(self, clf_name, preds):
         for m in metric_func:
-            self.metrics[clf_name][m.__name__] = m(self.y, preds)
+            self._metrics[clf_name][m.__name__] = m(self.y, preds)
 
-    def format_metrics(self):
-        assert(len(self.metrics) != 0), "There are no metrics to be shown, you need to run the comparator first."
-        self.metrics = pd.DataFrame(self.metrics).T
+    def __format_metrics(self):
+        self._metrics = pd.DataFrame(self._metrics).T
+
+    def get_metrics(self):
+        assert(len(self._metrics) != 0), "There are no metrics to be shown, you need to run the comparator first."
+        return self._metrics
 
     def best_clf(self, metric="f1_score"):
-        assert(len(self.metrics) != 0), "There are no models to compare, you need to run the comparator first."
+        assert(len(self._metrics) != 0), "There are no models to compare, you need to run the comparator first."
         return self.classifiers[self.metrics.sort_values(by=metric).index[-1]]
