@@ -38,14 +38,16 @@ metric_func = [
 class BinaryClassifierComparator:
     def __init__(self, X, y, classifiers: dict = default_classifiers, cv=10):
         self.X = X
+        self.n_classes = len(Counter(y))
+        if self.n_classes != 2:
+            raise ValueError(f"Expected 2 classes but got {self.n_classes}.")
         self.y = y
         self.classifiers = classifiers
         self.cv = cv
         self.metrics = {}
     
     def run(self):
-        if len(Counter(self.y)) < 2:
-            raise ValueError("Expected 2 classes but got less in y_true")
+        
         print(f"The comparator has started...\nRunning for {len(self.classifiers)} classifiers")
         initial_time = time.time()
         for i, (clf_name, clf) in enumerate(self.classifiers.items()):
@@ -56,6 +58,8 @@ class BinaryClassifierComparator:
             self.metrics[clf_name] = {"cv_time": cv_time}
             print((15 - len(clf_name))*" ",f"training time: {time_format(cv_time)}")
             self.calculate_scores(clf_name, preds)
+
+        # print times and metrics
         print(f"Total comparator time {time_format(time.time() - initial_time)}")
         self.format_metrics()
         display(self.metrics)
