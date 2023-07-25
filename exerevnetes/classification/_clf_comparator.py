@@ -22,7 +22,7 @@ default_classifiers = {
     "extra_tree": ExtraTreesClassifier(),
     "logistic_reg": LogisticRegression(),
     "svc": SVC(),
-    "catboost": CatBoostClassifier(verbose=False),
+    "catboost": CatBoostClassifier(verbose=False, allow_writing_files=False),
     "xgboost": XGBClassifier(),
     "naive_bayes": GaussianNB()
 }
@@ -69,9 +69,9 @@ class BinaryClassifierComparator:
             self.metrics[clf_name][m.__name__] = m(self.y, preds)
 
     def format_metrics(self):
-        assert(len(self.metrics) != 0), "You need to run the comparator first"
+        assert(len(self.metrics) != 0), "There are no metrics to be shown, you need to run the comparator first."
         self.metrics = pd.DataFrame(self.metrics).T
 
     def best_clf(self, metric="f1_score"):
-        assert(len(self.metrics) != 0), "You need to run the comparator first"
+        assert(len(self.metrics) != 0), "There are no models to compare, you need to run the comparator first."
         return self.classifiers[self.metrics.sort_values(by=metric).index[-1]]
