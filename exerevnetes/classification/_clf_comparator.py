@@ -1,4 +1,5 @@
 import time
+import warnings
 import pandas as pd
 from collections import Counter
 from IPython.display import display
@@ -84,6 +85,11 @@ class BinaryClassifierComparator:
     def get_metrics(self):
         assert(len(self._metrics) != 0), "There are no metrics to be shown, you need to run the comparator first."
         return self._metrics
+    
+    def get_pipeline(self):
+        if not self.pipeline:
+            warnings.warn("The pipeline attribute is \033[1mNone\033[m and has not been defined.", UserWarning)
+        return self.pipeline
 
     def best_clf(self, metric="f1_score"):
         assert(len(self._metrics) != 0), "There are no models to compare, you need to run the comparator first."
