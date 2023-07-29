@@ -87,11 +87,21 @@ def test_pipelines_as_classifiers(classifiers, expected):
 
 
 @pytest.mark.parametrize("pipeline, expected", [
-    ({
-        "pipe":Pipeline(steps=[("scaler", StandardScaler())])
-    }, (7,3))
+    (Pipeline(steps=[("scaler", StandardScaler())]), (7,6))
 ])
-def test_pipeline_attribute(pipeline, expected):
+def test_pipeline_attr_metrics(pipeline, expected):
+    """testing the pipeline attribute"""
     cmp = BinaryClassifierComparator(X, y, pipeline=pipeline)
     cmp.run()
-    assert cmp.get_metrics().shape[0] == expected
+    assert cmp.get_metrics().shape == expected
+
+
+@pytest.mark.parametrize("pipeline", [
+    (None),
+    (Pipeline(steps=[("scaler", StandardScaler())]))
+])
+def test_pipeline_attr_best_clf(pipeline):
+    """testing best_clf function with pipeline attribute"""
+    cmp = BinaryClassifierComparator(X, y, pipeline=pipeline)
+    cmp.run()
+    assert hasattr(cmp.best_clf(), "predict")
