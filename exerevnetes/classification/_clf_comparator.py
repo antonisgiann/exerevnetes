@@ -91,7 +91,7 @@ class BinaryClassifierComparator:
             warnings.warn("The pipeline attribute is \033[1mNone\033[m and has not been defined.", UserWarning)
         return self.pipeline
 
-    def best_clf(self, metric="f1_score"):
+    def get_best_clf(self, metric="f1_score"):
         assert(len(self._metrics) != 0), "There are no models to compare, you need to run the comparator first."
         if self.pipeline:
             return self.classifiers[self._metrics.sort_values(by=metric).index[-1]].steps[-1][1]

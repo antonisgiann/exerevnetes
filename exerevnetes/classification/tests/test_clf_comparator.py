@@ -104,4 +104,4 @@ def test_pipeline_attr_best_clf(pipeline):
     """testing best_clf function with pipeline attribute"""
     cmp = BinaryClassifierComparator(X, y, pipeline=pipeline)
     cmp.run()
-    assert hasattr(cmp.best_clf(), "predict")
+    assert hasattr(cmp.get_best_clf(), "predict")
