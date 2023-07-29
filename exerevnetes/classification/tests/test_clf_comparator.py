@@ -55,7 +55,7 @@ def test_if_run():
     """test if comparator was run before getting the best classifier"""
     cmp = BinaryClassifierComparator(X, y)
     with pytest.raises(AssertionError) as exce:
-        cmp.best_clf()
+        cmp.get_best_clf()
     assert str(exce.value) == "There are no models to compare, you need to run the comparator first."
     with pytest.raises(AssertionError) as exce:
         cmp.get_metrics()
