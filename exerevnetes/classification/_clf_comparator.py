@@ -9,6 +9,7 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.naive_bayes import GaussianNB
 
 from sklearn.model_selection import cross_val_predict
+from sklearn.base import clone
 from sklearn.metrics import f1_score, recall_score, precision_score, roc_auc_score, accuracy_score
 
 from catboost import CatBoostClassifier
@@ -36,7 +37,7 @@ default_metric_funcs = [
 ]
 
 class BinaryClassifierComparator:
-    def __init__(self, X, y, classifiers: dict = default_classifiers, cv=5, metric_funcs: list = default_metric_funcs):
+    def __init__(self, X, y, classifiers: dict = default_classifiers, cv=5, metric_funcs: list = default_metric_funcs, pipeline=None):
         self.X = X
         self.n_classes = len(Counter(y))
         if self.n_classes != 2:
@@ -45,7 +46,10 @@ class BinaryClassifierComparator:
         self.classifiers = classifiers
         self.cv = cv
         self.metric_funcs = metric_funcs
+        self.pipeline = pipeline
         self._metrics = {}
+        if pipeline:
+            self.__build_pipelines(pipeline)
     
     def run(self):
         print(f"The comparator has started...\nRunning for {len(self.classifiers)} classifiers")
@@ -71,10 +75,19 @@ class BinaryClassifierComparator:
     def __format_metrics(self):
         self._metrics = pd.DataFrame(self._metrics).T
 
+    def __build_pipelines(self, pipeline):
+        for clf_name, clf in self.classifiers.items():
+            tmp_pipe = clone(pipeline)
+            tmp_pipe.steps.append(("model", clf))
+            self.classifiers[clf_name] = tmp_pipe
+
     def get_metrics(self):
         assert(len(self._metrics) != 0), "There are no metrics to be shown, you need to run the comparator first."
         return self._metrics
 
     def best_clf(self, metric="f1_score"):
         assert(len(self._metrics) != 0), "There are no models to compare, you need to run the comparator first."
-        return self.classifiers[self.metrics.sort_values(by=metric).index[-1]]
+        if self.pipeline:
+            return self.classifiers[self._metrics.sort_values(by=metric).index[-1]].steps[-1][1]
+        else:
+            return self.classifiers[self._metrics.sort_values(by=metric).index[-1]]
