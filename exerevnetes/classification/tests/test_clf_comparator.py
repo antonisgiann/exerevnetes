@@ -79,8 +79,19 @@ def test_number_of_metrics(metric_funcs, expected):
         }, 1)
     ]
 )
-def test_pipeline(classifiers, expected):
-    """test the output of passing a pipeline for classifiers"""
+def test_pipelines_as_classifiers(classifiers, expected):
+    """test the output of passing a single pipeline for classifiers"""
     cmp = BinaryClassifierComparator(X, y, classifiers=classifiers)
     cmp.run()
-    assert cmp.get_metrics().shape[0] == 1
+    assert cmp.get_metrics().shape[0] == expected
+
+
+@pytest.mark.parametrize("pipeline, expected", [
+    ({
+        "pipe":Pipeline(steps=[("scaler", StandardScaler())])
+    }, (7,3))
+])
+def test_pipeline_attribute(pipeline, expected):
+    cmp = BinaryClassifierComparator(X, y, pipeline=pipeline)
+    cmp.run()
+    assert cmp.get_metrics().shape[0] == expected
