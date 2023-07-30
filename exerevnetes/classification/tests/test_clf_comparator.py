@@ -2,8 +2,9 @@ import pytest
 import numpy as np
 
 from .._clf_comparator import BinaryClassifierComparator
+from sklearn.base import BaseEstimator
 from sklearn.datasets import make_classification
-from sklearn.metrics import f1_score, roc_auc_score
+from sklearn.metrics import f1_score, roc_auc_score, accuracy_score
 from sklearn.ensemble import RandomForestClassifier, ExtraTreesClassifier
 from sklearn.preprocessing import StandardScaler
 from sklearn.decomposition import PCA
@@ -15,8 +16,28 @@ np.random.seed(47)
 # General testing dataset
 X, y = make_classification(n_samples=1000, n_features=10, n_informative=5, n_classes=2, random_state=47)
 
+####### General test #######
+@pytest.mark.parametrize("X, y, classifiers, cv, metric_funcs, preprocess, expected_shape", [
+    (
+        X, # dependent variables
+        y, # independent variables
+        {"forest": RandomForestClassifier(), "extraTrees": ExtraTreesClassifier()}, # classifiers
+        7, # cross validation folds
+        [f1_score, roc_auc_score, accuracy_score], # metrics
+        Pipeline(steps=[("scaler", StandardScaler()), ("pca", PCA())]), # preprocessing pipeline
+        (2,4) # shape of the metrics output
+    )
+])
+def test_class(X, y, classifiers, cv, metric_funcs, preprocess, expected_shape):
+    """testing all class attributes together"""
+    cmp = BinaryClassifierComparator(X, y, classifiers, cv, metric_funcs, preprocess)
+    cmp.run()
+    assert cmp.get_metrics().shape == expected_shape
+    assert isinstance(cmp.get_best_clf(), BaseEstimator)
+    assert isinstance(cmp.get_preprocess(), Pipeline) and len(cmp.get_preprocess().steps) == 2
 
-####### General tests #######
+
+####### tests #######
 @pytest.mark.parametrize("X, y", [
     (np.array([[0,0,0,1],[0,0,1,0]]), np.array([[1,0]]).ravel())
     ])
