@@ -18,7 +18,7 @@ X, y = make_classification(n_samples=1000, n_features=10, n_informative=5, n_cla
 ####### General tests #######
 @pytest.mark.parametrize(
         "X, y",
-        [(np.array([[0,0,0,1],[0,0,1,0]]), np.array([[1,1,1,0]]).ravel())]
+        [(np.array([[0,0,0,1],[0,0,1,0]]), np.array([[1,0]]).ravel())]
 )
 def test_small_sample_size(X, y):
     """test that comparator fails for small sample size because of cross-validation"""
