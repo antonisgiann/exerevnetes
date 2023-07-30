@@ -1,6 +1,7 @@
 import time
 import warnings
 import pandas as pd
+import numpy as np
 from collections import Counter
 from IPython.display import display
 
@@ -40,9 +41,33 @@ default_metric_funcs = [
 
 class BinaryClassifierComparator:
     def __init__(self, X, y, classifiers: dict = default_classifiers, cv=5, metric_funcs: list = default_metric_funcs, preprocess=None):
-        self.__check_constructor_args(locals())
+        if not isinstance(X, np.ndarray) and not hasattr(X, "values"):
+            raise TypeError("'X' is not a numpy.array nor a has a 'values' attribute to return a numpy.array.")
+        if not isinstance(y, np.ndarray) and not hasattr(y, "values"):
+            raise TypeError("'y' is not a numpy.array nor a has a 'values' attribute to return a numpy.array.")
+        if not isinstance(classifiers, dict):
+            raise TypeError("'classifiers' must be a dictionary.")
+        if isinstance(cv, int) and cv < 2:
+            raise ValueError("cv must be a positive integer greater than 1.")
+        if not isinstance(metric_funcs, list) and not all(callable(m_f) for m_f in metric_funcs):
+            raise TypeError("'metric_funcs' must be a list of callable functions.")
+
+        if len(X) == 0:
+            raise ValueError("An empty array was given for 'X'")
+        if len(y) != len(X):
+            raise ValueError(f"There is a mismatch between 'X' and 'y'. 'X' has shape {X.shape} and 'y' has shape {y.shape}")
+        if len(classifiers) == 0:
+            raise ValueError(f"An empty {str(type(classifiers)).split()[-1][1:-2]} was given for 'classifiers'.")
+        if len(metric_funcs) == 0:
+            raise ValueError(f"An empty {str(type(metric_funcs)).split()[-1][1:-2]} was given for 'metric_funcs'.")
+        n_classes = Counter(y)
+        if len(n_classes) != 2:
+            raise ValueError(f"Expected 2 classes but got {n_classes}.")
+        if preprocess:
+            self.__preprocess_checks(preprocess)
+
         self.X = X
-        self.n_classes = len(Counter(y))
+        self.n_classes = n_classes
         self.y = y
         self.classifiers = classifiers
         self.cv = cv
@@ -70,33 +95,7 @@ class BinaryClassifierComparator:
         self.__format_metrics()
         display(self._metrics)
 
-    def __check_constructor_args(self, args):
-        if len(args["X"]) == 0:
-            raise ValueError("An empty array was given for 'X'")
-        if len(args["y"]) != len(args["X"]):
-            raise ValueError(f"There is a mismatch between 'X' and 'y'. 'X' has shape {args['X'].shape} and 'y' has shape {args['y'].shape}")
-        if len(args["classifiers"]) == 0:
-            arg_type = str(type(args['classifiers'])).split()[-1][1:-2]
-            if arg_type != "dict":
-                type_msg = "Be aware that 'classifiers' must be a dictionary"
-            else:
-                type_msg = ""
-            raise ValueError(f"An empty {arg_type} was given for 'classifiers'. {type_msg}")
-        if len(args["metric_funcs"]) == 0:
-            arg_type = str(type(args['metric_funcs'])).split()[-1][1:-2]
-            if arg_type != "list":
-                type_msg = "Be aware that 'metric_funcs' must be a list"
-            else:
-                type_msg = ""
-            raise ValueError(f"An empty {arg_type} was given for 'metric_funcs'. {type_msg}")
-        n_classes = Counter(args['y'])
-        if len(n_classes) != 2:
-            raise ValueError(f"Expected 2 classes but got {n_classes}.")
-        self.__preprocess_check(args['preprocess'])
-
-    def __preprocess_check(self, preprocess):
-        if preprocess == None:
-            return True
+    def __preprocess_checks(self, preprocess):
         if type(preprocess) != Pipeline:
                 raise AttributeError(f"The comparator accepts only \033[34msklearn.pipeline.Pipeline\033[0m objects as 'preprocess'.")
         elif hasattr(preprocess.steps[-1][1], "predict"):
@@ -120,7 +119,7 @@ class BinaryClassifierComparator:
     def set_preprocess(self, preprocess):
         if preprocess == None:
             raise ValueError("'preprocess' is None")
-        if self.__preprocess_check(preprocess):
+        if self.__preprocess_checks(preprocess):
             self.preprocess = preprocess
             self.__build_pipelines(self.preprocess)
         
