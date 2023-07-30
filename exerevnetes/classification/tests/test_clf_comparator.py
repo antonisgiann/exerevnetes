@@ -110,5 +110,5 @@ def test_pipeline_attr_best_clf(pipeline):
 @pytest.mark.parametrize("pipeline", [(Pipeline(steps=[("scaler", StandardScaler())]))])
 def test_get_pipeline(pipeline):
     cmp = BinaryClassifierComparator(X, y, pipeline=pipeline)
-    assert cmp.get_pipeline == pipeline
+    assert cmp.get_pipeline() == pipeline
     assert type(cmp.get_pipeline()) == Pipeline
