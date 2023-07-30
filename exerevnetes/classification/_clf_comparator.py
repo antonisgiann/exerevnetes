@@ -54,6 +54,7 @@ class BinaryClassifierComparator:
     
     def run(self):
         print(f"The comparator has started...\nRunning for {len(self.classifiers)} classifiers")
+        self._metrics = {}
         initial_time = time.time()
         for i, (clf_name, clf) in enumerate(self.classifiers.items()):
             print(f"Running cross validation for {i+1}. {clf_name}...", end="")
