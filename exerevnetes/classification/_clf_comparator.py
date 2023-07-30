@@ -51,7 +51,10 @@ class BinaryClassifierComparator:
         self.preprocess = preprocess
         self._metrics = {}
         if preprocess:
-            assert type(preprocess) == Pipeline, f"The comparator accepts only \033[34msklearn.pipeline.Pipeline\033[0m objects as preprocess."
+            if type(preprocess) != Pipeline:
+                raise AttributeError(f"The comparator accepts only \033[34msklearn.pipeline.Pipeline\033[0m objects as 'preprocess'.")
+            if hasattr(preprocess.steps[-1][1], "predict"):
+                raise AttributeError("The 'preprocess' contains an predictor. Please make sure 'preprocess' contains only preprocessing steps")
             self.__build_pipelines(preprocess)
     
     def run(self):
@@ -86,7 +89,8 @@ class BinaryClassifierComparator:
             self.classifiers[clf_name] = tmp_pipe
 
     def get_metrics(self):
-        assert(len(self._metrics) != 0), "There are no metrics to be shown, you need to run the comparator first."
+        if len(self._metrics) == 0:
+            raise ValueError("There are no metrics to be shown, you need to run the comparator first.")
         return self._metrics
     
     def get_preprocess(self):
@@ -95,7 +99,8 @@ class BinaryClassifierComparator:
         return self.preprocess
 
     def get_best_clf(self, metric="f1_score"):
-        assert(len(self._metrics) != 0), "There are no models to compare, you need to run the comparator first."
+        if len(self._metrics) == 0:
+            raise ValueError("There are no models to compare, you need to run the comparator first.")
         if self.preprocess:
             return self.classifiers[self._metrics.sort_values(by=metric).index[-1]].steps[-1][1]
         else:

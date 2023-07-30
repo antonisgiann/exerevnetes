@@ -55,10 +55,10 @@ def test_n_class(X, y):
 def test_if_run():
     """test if comparator was run before getting the best classifier"""
     cmp = BinaryClassifierComparator(X, y)
-    with pytest.raises(AssertionError) as exce:
+    with pytest.raises(ValueError) as exce:
         cmp.get_best_clf()
     assert str(exce.value) == "There are no models to compare, you need to run the comparator first."
-    with pytest.raises(AssertionError) as exce:
+    with pytest.raises(ValueError) as exce:
         cmp.get_metrics()
     assert str(exce.value) == "There are no metrics to be shown, you need to run the comparator first."
 
@@ -129,6 +129,15 @@ def test_get_preprocess(preprocess):
 def test_if_preprocess_pipeline():
     """testing if preprocess is an sklearn.pipeline.Pipeline"""
     preprocess = lambda x: x**2
-    with pytest.raises(AssertionError) as exce:
+    with pytest.raises(AttributeError) as exce:
+        cmp = BinaryClassifierComparator(X, y, preprocess=preprocess)
+
+
+@pytest.mark.parametrize("preprocess", [
+    (Pipeline(steps=[("scaler", StandardScaler()), ("model", RandomForestClassifier())]))
+])
+def test_if_preprocess_contains_predictor(preprocess):
+    """testing if preprocessing contains a predictor"""
+    with pytest.raises(AttributeError) as exce:
         cmp = BinaryClassifierComparator(X, y, preprocess=preprocess)
     
