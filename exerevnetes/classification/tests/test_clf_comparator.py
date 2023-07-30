@@ -105,3 +105,10 @@ def test_pipeline_attr_best_clf(pipeline):
     cmp = BinaryClassifierComparator(X, y, pipeline=pipeline)
     cmp.run()
     assert hasattr(cmp.get_best_clf(), "predict")
+
+
+@pytest.mark.parametrize("pipeline", [(Pipeline(steps=[("scaler", StandardScaler())]))])
+def test_get_pipeline(pipeline):
+    cmp = BinaryClassifierComparator(X, y, pipeline=pipeline)
+    assert cmp.get_pipeline == pipeline
+    assert type(cmp.get_pipeline()) == Pipeline
