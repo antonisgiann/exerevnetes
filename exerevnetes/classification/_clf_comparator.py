@@ -116,9 +116,18 @@ class BinaryClassifierComparator:
             tmp_pipe.steps.append(("model", clf))
             self.classifiers[clf_name] = tmp_pipe
 
+    def set_classifiers(self, classifiers):
+        if classifiers == None:
+            raise ValueError("'classifiers' is None.")
+        if not isinstance(classifiers, dict):
+            raise TypeError("'classifiers' must be a dictionary.")
+        self.classifiers = classifiers
+        if self.preprocess:
+            self.__build_pipelines(self.preprocess)
+
     def set_preprocess(self, preprocess):
         if preprocess == None:
-            raise ValueError("'preprocess' is None")
+            raise ValueError("'preprocess' is None.")
         if self.__preprocess_checks(preprocess):
             self.preprocess = preprocess
             self.__build_pipelines(self.preprocess)
@@ -132,6 +141,9 @@ class BinaryClassifierComparator:
         if not self.preprocess:
             warnings.warn("The preprocess attribute is \033[1mNone\033[0m.", UserWarning)
         return self.preprocess
+    
+    def get_classifiers(self):
+        return self.classifiers
 
     def get_best_clf(self, metric="f1_score"):
         if len(self._metrics) == 0:
