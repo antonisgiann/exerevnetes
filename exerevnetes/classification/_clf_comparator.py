@@ -12,6 +12,7 @@ from sklearn.naive_bayes import GaussianNB
 from sklearn.model_selection import cross_val_predict
 from sklearn.base import clone
 from sklearn.metrics import f1_score, recall_score, precision_score, roc_auc_score, accuracy_score
+from sklearn.pipeline import Pipeline
 
 from catboost import CatBoostClassifier
 from xgboost import XGBClassifier
@@ -50,6 +51,7 @@ class BinaryClassifierComparator:
         self.preprocess = preprocess
         self._metrics = {}
         if preprocess:
+            assert type(preprocess) == Pipeline, f"The comparator accepts only \033[34msklearn.pipeline.Pipeline\033[0m objects as preprocess."
             self.__build_pipelines(preprocess)
     
     def run(self):
@@ -89,7 +91,7 @@ class BinaryClassifierComparator:
     
     def get_preprocess(self):
         if not self.preprocess:
-            warnings.warn("The preprocess attribute is \033[1mNone\033[m and has not been defined.", UserWarning)
+            warnings.warn("The preprocess attribute is \033[1mNone\033[0m.", UserWarning)
         return self.preprocess
 
     def get_best_clf(self, metric="f1_score"):

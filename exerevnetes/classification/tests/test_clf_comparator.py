@@ -80,7 +80,7 @@ def test_multiple_run_calls():
     assert cmp.get_metrics().dropna().shape == (7,6)
 
 
-####### Pipeline tests #######
+####### Preprocess tests #######
 @pytest.mark.parametrize(
     "classifiers, expected",
     [
@@ -124,3 +124,11 @@ def test_get_preprocess(preprocess):
     cmp = BinaryClassifierComparator(X, y, preprocess=preprocess)
     assert cmp.get_preprocess() == preprocess
     assert type(cmp.get_preprocess()) == Pipeline
+
+
+def test_if_preprocess_pipeline():
+    """testing if preprocess is an sklearn.pipeline.Pipeline"""
+    preprocess = lambda x: x**2
+    with pytest.raises(AssertionError) as exce:
+        cmp = BinaryClassifierComparator(X, y, preprocess=preprocess)
+    
