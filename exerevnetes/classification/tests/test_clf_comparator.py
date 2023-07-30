@@ -15,6 +15,7 @@ np.random.seed(47)
 X, y = make_classification(n_samples=1000, n_features=10, n_informative=5, n_classes=2, random_state=47)
 
 
+####### General tests #######
 @pytest.mark.parametrize(
         "X, y",
         [(np.array([[0,0,0,1],[0,0,1,0]]), np.array([[1,1,1,0]]).ravel())]
@@ -70,6 +71,16 @@ def test_number_of_metrics(metric_funcs, expected):
     assert cmp.get_metrics().shape[1] == expected
 
 
+def test_multiple_run_calls():
+    """testing multiple calls of run()"""
+    cmp = BinaryClassifierComparator(X, y)
+    cmp.run()
+    cmp.run()
+    cmp.run()
+    assert cmp.get_metrics().dropna().shape == (7,6)
+    
+
+####### Pipeline tests #######
 @pytest.mark.parametrize(
     "classifiers, expected",
     [
@@ -109,6 +120,7 @@ def test_pipeline_attr_best_clf(pipeline):
 
 @pytest.mark.parametrize("pipeline", [(Pipeline(steps=[("scaler", StandardScaler())]))])
 def test_get_pipeline(pipeline):
+    """testing the get_pipeline() function"""
     cmp = BinaryClassifierComparator(X, y, pipeline=pipeline)
     assert cmp.get_pipeline() == pipeline
     assert type(cmp.get_pipeline()) == Pipeline
