@@ -78,7 +78,7 @@ def test_multiple_run_calls():
     cmp.run()
     cmp.run()
     assert cmp.get_metrics().dropna().shape == (7,6)
-    
+
 
 ####### Pipeline tests #######
 @pytest.mark.parametrize(
@@ -97,30 +97,30 @@ def test_pipelines_as_classifiers(classifiers, expected):
     assert cmp.get_metrics().shape[0] == expected
 
 
-@pytest.mark.parametrize("pipeline, expected", [
+@pytest.mark.parametrize("preprocess, expected", [
     (Pipeline(steps=[("scaler", StandardScaler())]), (7,6))
 ])
-def test_pipeline_attr_metrics(pipeline, expected):
-    """testing the pipeline attribute"""
-    cmp = BinaryClassifierComparator(X, y, pipeline=pipeline)
+def test_preprocess_attr_metrics(preprocess, expected):
+    """testing the preprocess attribute"""
+    cmp = BinaryClassifierComparator(X, y, preprocess=preprocess)
     cmp.run()
     assert cmp.get_metrics().shape == expected
 
 
-@pytest.mark.parametrize("pipeline", [
+@pytest.mark.parametrize("preprocess", [
     (None),
     (Pipeline(steps=[("scaler", StandardScaler())]))
 ])
-def test_pipeline_attr_best_clf(pipeline):
-    """testing best_clf function with pipeline attribute"""
-    cmp = BinaryClassifierComparator(X, y, pipeline=pipeline)
+def test_preprocess_attr_best_clf(preprocess):
+    """testing best_clf function with preprocess attribute"""
+    cmp = BinaryClassifierComparator(X, y, preprocess=preprocess)
     cmp.run()
     assert hasattr(cmp.get_best_clf(), "predict")
 
 
-@pytest.mark.parametrize("pipeline", [(Pipeline(steps=[("scaler", StandardScaler())]))])
-def test_get_pipeline(pipeline):
-    """testing the get_pipeline() function"""
-    cmp = BinaryClassifierComparator(X, y, pipeline=pipeline)
-    assert cmp.get_pipeline() == pipeline
-    assert type(cmp.get_pipeline()) == Pipeline
+@pytest.mark.parametrize("preprocess", [(Pipeline(steps=[("scaler", StandardScaler())]))])
+def test_get_preprocess(preprocess):
+    """testing the get_preprocess() function"""
+    cmp = BinaryClassifierComparator(X, y, preprocess=preprocess)
+    assert cmp.get_preprocess() == preprocess
+    assert type(cmp.get_preprocess()) == Pipeline

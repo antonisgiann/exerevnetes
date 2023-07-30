@@ -38,7 +38,7 @@ default_metric_funcs = [
 ]
 
 class BinaryClassifierComparator:
-    def __init__(self, X, y, classifiers: dict = default_classifiers, cv=5, metric_funcs: list = default_metric_funcs, pipeline=None):
+    def __init__(self, X, y, classifiers: dict = default_classifiers, cv=5, metric_funcs: list = default_metric_funcs, preprocess=None):
         self.X = X
         self.n_classes = len(Counter(y))
         if self.n_classes != 2:
@@ -47,10 +47,10 @@ class BinaryClassifierComparator:
         self.classifiers = classifiers
         self.cv = cv
         self.metric_funcs = metric_funcs
-        self.pipeline = pipeline
+        self.preprocess = preprocess
         self._metrics = {}
-        if pipeline:
-            self.__build_pipelines(pipeline)
+        if preprocess:
+            self.__build_pipelines(preprocess)
     
     def run(self):
         print(f"The comparator has started...\nRunning for {len(self.classifiers)} classifiers")
@@ -77,9 +77,9 @@ class BinaryClassifierComparator:
     def __format_metrics(self):
         self._metrics = pd.DataFrame(self._metrics).T
 
-    def __build_pipelines(self, pipeline):
+    def __build_pipelines(self, preprocess):
         for clf_name, clf in self.classifiers.items():
-            tmp_pipe = clone(pipeline)
+            tmp_pipe = clone(preprocess)
             tmp_pipe.steps.append(("model", clf))
             self.classifiers[clf_name] = tmp_pipe
 
@@ -87,14 +87,14 @@ class BinaryClassifierComparator:
         assert(len(self._metrics) != 0), "There are no metrics to be shown, you need to run the comparator first."
         return self._metrics
     
-    def get_pipeline(self):
-        if not self.pipeline:
-            warnings.warn("The pipeline attribute is \033[1mNone\033[m and has not been defined.", UserWarning)
-        return self.pipeline
+    def get_preprocess(self):
+        if not self.preprocess:
+            warnings.warn("The preprocess attribute is \033[1mNone\033[m and has not been defined.", UserWarning)
+        return self.preprocess
 
     def get_best_clf(self, metric="f1_score"):
         assert(len(self._metrics) != 0), "There are no models to compare, you need to run the comparator first."
-        if self.pipeline:
+        if self.preprocess:
             return self.classifiers[self._metrics.sort_values(by=metric).index[-1]].steps[-1][1]
         else:
             return self.classifiers[self._metrics.sort_values(by=metric).index[-1]]
