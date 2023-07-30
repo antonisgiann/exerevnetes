@@ -50,12 +50,8 @@ class BinaryClassifierComparator:
         self.metric_funcs = metric_funcs
         self.preprocess = preprocess
         self._metrics = {}
-        if preprocess:
-            if type(preprocess) != Pipeline:
-                raise AttributeError(f"The comparator accepts only \033[34msklearn.pipeline.Pipeline\033[0m objects as 'preprocess'.")
-            if hasattr(preprocess.steps[-1][1], "predict"):
-                raise AttributeError("The 'preprocess' contains an predictor. Please make sure 'preprocess' contains only preprocessing steps")
-            self.__build_pipelines(preprocess)
+        if self.__preprocess_check(self.preprocess):
+            self.__build_pipelines(self.preprocess)
     
     def run(self):
         print(f"The comparator has started...\nRunning for {len(self.classifiers)} classifiers")
@@ -75,6 +71,14 @@ class BinaryClassifierComparator:
         self.__format_metrics()
         display(self._metrics)
 
+    def __preprocess_check(self, preprocess):
+        if type(preprocess) != Pipeline:
+                raise AttributeError(f"The comparator accepts only \033[34msklearn.pipeline.Pipeline\033[0m objects as 'preprocess'.")
+        elif hasattr(preprocess.steps[-1][1], "predict"):
+                raise AttributeError("The 'preprocess' contains an predictor. Please make sure 'preprocess' contains only preprocessing steps")
+        else:
+            return True
+        
     def __calculate_scores(self, clf_name, preds):
         for m in self.metric_funcs:
             self._metrics[clf_name][m.__name__] = m(self.y, preds)
@@ -88,6 +92,11 @@ class BinaryClassifierComparator:
             tmp_pipe.steps.append(("model", clf))
             self.classifiers[clf_name] = tmp_pipe
 
+    def set_preprocess(self, preprocess):
+        if self.__preprocess_check(preprocess):
+            self.preprocess = preprocess
+            self.__build_pipelines(self.preprocess)
+        
     def get_metrics(self):
         if len(self._metrics) == 0:
             raise ValueError("There are no metrics to be shown, you need to run the comparator first.")
