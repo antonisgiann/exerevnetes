@@ -6,6 +6,7 @@ from sklearn.datasets import make_classification
 from sklearn.metrics import f1_score, roc_auc_score
 from sklearn.ensemble import RandomForestClassifier, ExtraTreesClassifier
 from sklearn.preprocessing import StandardScaler
+from sklearn.decomposition import PCA
 from sklearn.pipeline import Pipeline
 
 
@@ -140,4 +141,16 @@ def test_if_preprocess_contains_predictor(preprocess):
     """testing if preprocessing contains a predictor"""
     with pytest.raises(AttributeError) as exce:
         cmp = BinaryClassifierComparator(X, y, preprocess=preprocess)
+
+@pytest.mark.parametrize("preprocess", [
+    (Pipeline(steps=[("scaler", StandardScaler()), ("PCA", PCA())]))
+])
+def test_preprocess_setter(preprocess):
+    """testing preprocess setter and getter"""
+    cmp = BinaryClassifierComparator(X, y)
+    cmp.run()
+    cmp.set_preprocess(preprocess)
+    assert cmp.get_preprocess() == preprocess
+    cmp.run()
+    cmp.get_best_clf()
     
