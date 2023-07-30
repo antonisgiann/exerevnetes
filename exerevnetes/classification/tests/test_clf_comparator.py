@@ -4,7 +4,7 @@ import numpy as np
 from .._clf_comparator import BinaryClassifierComparator
 from sklearn.datasets import make_classification
 from sklearn.metrics import f1_score, roc_auc_score
-from sklearn.ensemble import RandomForestClassifier
+from sklearn.ensemble import RandomForestClassifier, ExtraTreesClassifier
 from sklearn.preprocessing import StandardScaler
 from sklearn.pipeline import Pipeline
 
@@ -16,10 +16,9 @@ X, y = make_classification(n_samples=1000, n_features=10, n_informative=5, n_cla
 
 
 ####### General tests #######
-@pytest.mark.parametrize(
-        "X, y",
-        [(np.array([[0,0,0,1],[0,0,1,0]]), np.array([[1,0]]).ravel())]
-)
+@pytest.mark.parametrize("X, y", [
+    (np.array([[0,0,0,1],[0,0,1,0]]), np.array([[1,0]]).ravel())
+    ])
 def test_small_sample_size(X, y):
     """test that comparator fails for small sample size because of cross-validation"""
     cmp = BinaryClassifierComparator(X, y)
@@ -27,10 +26,9 @@ def test_small_sample_size(X, y):
         cmp.run()
 
 
-@pytest.mark.parametrize(
-    "X, y, cv, expected", 
-    [(np.random.randint(0, 100, size=1000).reshape(100,10), np.random.randint(0, 2, size=100).ravel(), 5, (7,6))]
-)
+@pytest.mark.parametrize("X, y, cv, expected", [
+    (np.random.randint(0, 100, size=1000).reshape(100,10), np.random.randint(0, 2, size=100).ravel(), 5, (7,6))
+    ])
 def test_default_metrics_size(X, y, cv, expected):
     """test the size of the metrics dataframe"""
     cmp = BinaryClassifierComparator(X, y, cv=cv)
@@ -38,13 +36,10 @@ def test_default_metrics_size(X, y, cv, expected):
     assert cmp.get_metrics().shape == expected
 
 
-@pytest.mark.parametrize(
-    "X, y",
-    [
+@pytest.mark.parametrize("X, y",[
         (np.random.randint(0, 100, size=1000).reshape(100,10), np.random.randint(0, 1, size=100)),
         (np.random.randint(0, 100, size=1000).reshape(100,10), np.random.randint(0, 5, size=100))
-    ]
-)
+    ])
 def test_n_class(X, y):
     """test if there are two classes in y_true."""
     with pytest.raises(ValueError) as exce:
@@ -80,16 +75,21 @@ def test_multiple_run_calls():
     assert cmp.get_metrics().dropna().shape == (7,6)
 
 
+@pytest.mark.parametrize("classifiers, expected", [
+    ({"forest": RandomForestClassifier()}, (1,6)),
+    ({"forest": RandomForestClassifier(), "extra_tree": ExtraTreesClassifier()}, (2,6))
+])
+def test_classifiers_setter(classifiers, expected):
+    cmp = BinaryClassifierComparator(X, y, classifiers)
+    cmp.run()
+    assert cmp.get_metrics().shape == expected
+    assert cmp.get_classifiers() == classifiers
+
+
 ####### Preprocess tests #######
-@pytest.mark.parametrize(
-    "classifiers, expected",
-    [
-        ({
-            "pipe":Pipeline(
-            steps=[("scaler", StandardScaler()), ("model", RandomForestClassifier(n_jobs=-1))])
-        }, 1)
-    ]
-)
+@pytest.mark.parametrize("classifiers, expected", [
+        ({"pipe":Pipeline(steps=[("scaler", StandardScaler()), ("model", RandomForestClassifier(n_jobs=-1))])}, 1)
+    ])
 def test_pipelines_as_classifiers(classifiers, expected):
     """test the output of passing a single pipeline for classifiers"""
     cmp = BinaryClassifierComparator(X, y, classifiers=classifiers)
