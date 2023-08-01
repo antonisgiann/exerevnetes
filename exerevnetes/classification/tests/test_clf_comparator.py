@@ -111,6 +111,7 @@ def test_multiple_run_calls():
     ({"forest": RandomForestClassifier(), "extra_tree": ExtraTreesClassifier()}, (2,6))
 ])
 def test_classifiers_setter(classifiers, expected):
+    """test the classifiers setter function"""
     cmp = BinaryClassifierComparator(X, y, classifiers)
     cmp.run()
     assert cmp.get_metrics().shape == expected
@@ -183,4 +184,11 @@ def test_preprocess_setter(preprocess):
     assert cmp.get_preprocess() == preprocess
     cmp.run()
     cmp.get_best_clf()
-    
+
+####### Other tests #######
+@pytest.mark.parametrize("exclude", [(["svc", "extra_trees"])])
+def test_exclude_attr(exclude):
+    cmp = BinaryClassifierComparator(X, y, exclude=exclude)
+    cmp.run()
+    assert len(cmp.get_classifiers()) == 5
+    assert cmp.get_metrics().shape == (5,6)

@@ -24,8 +24,8 @@ from exerevnetes.utils import time_format
 
 default_classifiers = {
     "random_forest": RandomForestClassifier(n_jobs=-1),
-    "extra_tree": ExtraTreesClassifier(n_jobs=-1),
-    "logistic_reg": LogisticRegression(),
+    "extra_trees": ExtraTreesClassifier(n_jobs=-1),
+    "logistic_regression": LogisticRegression(),
     "svc": SVC(),
     "catboost": CatBoostClassifier(verbose=False, allow_writing_files=False),
     "xgboost": XGBClassifier(),
@@ -41,23 +41,38 @@ default_metric_funcs = [
 ]
 
 class BinaryClassifierComparator:
-    def __init__(self, X, y, classifiers: dict = default_classifiers, cv=5, metric_funcs: list = default_metric_funcs, preprocess=None):
+    def __init__(
+            self, 
+            X, 
+            y, 
+            classifiers: dict = None, 
+            cv: int =5, 
+            metric_funcs: list = default_metric_funcs, 
+            preprocess=None, 
+            exclude: list = None
+    ):
         if not isinstance(X, np.ndarray) and not hasattr(X, "values"):
             raise TypeError("'X' is not a numpy.array nor a has a 'values' attribute to return a numpy.array.")
         if not isinstance(y, np.ndarray) and not hasattr(y, "values"):
             raise TypeError("'y' is not a numpy.array nor a has a 'values' attribute to return a numpy.array.")
-        if not isinstance(classifiers, dict):
+        if classifiers and not isinstance(classifiers, dict):
             raise TypeError("'classifiers' must be a dictionary.")
         if isinstance(cv, int) and cv < 2:
             raise ValueError("cv must be a positive integer greater than 1.")
         if not isinstance(metric_funcs, list) and not all(callable(m_f) for m_f in metric_funcs):
             raise TypeError("'metric_funcs' must be a list of callable functions.")
+        if classifiers:
+            if exclude:
+                raise AttributeError("You can't use the 'exclude' attribute when passing 'classifiers'")
+        else:
+            if exclude and (not isinstance(exclude, list) or not all(ex in default_classifiers for ex in exclude)):
+                raise ValueError(f"'exclude' must be a list of available default classifiers. All default classifiers are: {list(default_classifiers.keys())}")
 
         if len(X) == 0:
             raise ValueError("An empty array was given for 'X'")
         if len(y) != len(X):
             raise ValueError(f"There is a mismatch between 'X' and 'y'. 'X' has shape {X.shape} and 'y' has shape {y.shape}")
-        if len(classifiers) == 0:
+        if classifiers and len(classifiers) == 0:
             raise ValueError(f"An empty {str(type(classifiers)).split()[-1][1:-2]} was given for 'classifiers'.")
         if len(metric_funcs) == 0:
             raise ValueError(f"An empty {str(type(metric_funcs)).split()[-1][1:-2]} was given for 'metric_funcs'.")
@@ -70,11 +85,19 @@ class BinaryClassifierComparator:
         self.X = X
         self.n_classes = n_classes
         self.y = y
-        self.classifiers = classifiers
+        if classifiers:
+            self.classifiers = classifiers
+        else:
+            self.classifiers = default_classifiers
         self.cv = cv
         self.metric_funcs = metric_funcs
         self.preprocess = preprocess
         self._metrics = {}
+        self.exclude = exclude
+        
+        if self.exclude:
+            for e in self.exclude:
+                self.classifiers.pop(e)
         if self.preprocess:
             self.__build_pipelines(self.preprocess)
     
