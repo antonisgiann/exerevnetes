@@ -36,7 +36,7 @@ def test_class(X, y, classifiers, cv, metric_funcs, num_pipe, expected_shape):
     preprocess = ColumnTransformer([("num_proc", num_pipe, X.columns.tolist())])
     cmp = BinaryClassifierComparator(X, y, classifiers, cv, metric_funcs, preprocess)
     cmp.run()
-    assert cmp.get_metrics().shape == expected_shape
+    assert cmp.get_metrics(sort_by=metric_funcs[0].__name__).shape == expected_shape
     assert isinstance(cmp.get_best_clf(), BaseEstimator)
     tmp = cmp.get_preprocess()
     assert isinstance(tmp, (Pipeline, ColumnTransformer))

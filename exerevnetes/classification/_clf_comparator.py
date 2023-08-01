@@ -140,11 +140,17 @@ class BinaryClassifierComparator:
             self.preprocess = preprocess
             self.__build_pipelines(self.preprocess)
         
-    def get_metrics(self):
+    def get_metrics(self, sort_by=None, ascending=False):
         if len(self._metrics) == 0:
             raise ValueError("There are no metrics to be shown, you need to run the comparator first.")
-        return self._metrics
-    
+        if sort_by:
+            if sort_by in [f.__name__ for f in self.metric_funcs]:
+                return self._metrics.sort_values(by=sort_by, ascending=ascending)
+            else:
+                raise ValueError(f"'{sort_by}' is not an available metric. Please choose one of {[f.__name__ for f in self.metric_funcs]}")
+        else:
+            return self._metrics
+            
     def get_preprocess(self):
         if not self.preprocess:
             warnings.warn("The preprocess attribute is \033[1mNone\033[0m.", UserWarning)
