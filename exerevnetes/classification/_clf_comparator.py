@@ -14,6 +14,7 @@ from sklearn.model_selection import cross_val_predict
 from sklearn.base import clone
 from sklearn.metrics import f1_score, recall_score, precision_score, roc_auc_score, accuracy_score
 from sklearn.pipeline import Pipeline
+from sklearn.compose import ColumnTransformer
 
 from catboost import CatBoostClassifier
 from xgboost import XGBClassifier
@@ -96,12 +97,16 @@ class BinaryClassifierComparator:
         display(self._metrics)
 
     def __preprocess_checks(self, preprocess):
-        if type(preprocess) != Pipeline:
-                raise AttributeError(f"The comparator accepts only \033[34msklearn.pipeline.Pipeline\033[0m objects as 'preprocess'.")
-        elif hasattr(preprocess.steps[-1][1], "predict"):
+        if not isinstance(preprocess, (Pipeline, ColumnTransformer)):
+                raise AttributeError(f"The comparator accepts only \033[34msklearn.pipeline.Pipeline\033[0m or \033[34msklearn.compose.ColumnTransformer\033[0m objects as 'preprocess'.")
+        if isinstance(preprocess, Pipeline):
+            if hasattr(preprocess.steps[-1][1], "predict"):
                 raise AttributeError("The 'preprocess' contains a predictor. Please make sure 'preprocess' contains only preprocessing steps")
-        else:
-            return True
+        elif isinstance(preprocess, ColumnTransformer):
+            if hasattr(preprocess.transformers[-1][1], "predict"):
+                raise AttributeError("The 'preprocess' contains a predictor. Please make sure 'preprocess' contains only preprocessing steps")
+        
+        return True
         
     def __calculate_scores(self, clf_name, preds):
         for m in self.metric_funcs:
@@ -112,9 +117,12 @@ class BinaryClassifierComparator:
 
     def __build_pipelines(self, preprocess):
         for clf_name, clf in self.classifiers.items():
-            tmp_pipe = clone(preprocess)
-            tmp_pipe.steps.append(("model", clf))
-            self.classifiers[clf_name] = tmp_pipe
+            if isinstance(preprocess, Pipeline):
+                tmp_pipe = clone(preprocess)
+                tmp_pipe.steps.append(("model", clf))
+                self.classifiers[clf_name] = tmp_pipe
+            elif isinstance(preprocess, ColumnTransformer):
+                self.classifiers[clf_name] = Pipeline(steps=[("preproc", preprocess), ("model", clf)])
 
     def set_classifiers(self, classifiers):
         if classifiers == None:

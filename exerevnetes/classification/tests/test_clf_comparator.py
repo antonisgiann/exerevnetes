@@ -1,5 +1,6 @@
 import pytest
 import numpy as np
+import pandas as pd
 
 from .._clf_comparator import BinaryClassifierComparator
 from sklearn.base import BaseEstimator
@@ -9,6 +10,7 @@ from sklearn.ensemble import RandomForestClassifier, ExtraTreesClassifier
 from sklearn.preprocessing import StandardScaler
 from sklearn.decomposition import PCA
 from sklearn.pipeline import Pipeline
+from sklearn.compose import ColumnTransformer
 
 
 np.random.seed(47)
@@ -17,7 +19,7 @@ np.random.seed(47)
 X, y = make_classification(n_samples=1000, n_features=10, n_informative=5, n_classes=2, random_state=47)
 
 ####### General test #######
-@pytest.mark.parametrize("X, y, classifiers, cv, metric_funcs, preprocess, expected_shape", [
+@pytest.mark.parametrize("X, y, classifiers, cv, metric_funcs, num_pipe, expected_shape", [
     (
         X, # dependent variables
         y, # independent variables
@@ -28,13 +30,20 @@ X, y = make_classification(n_samples=1000, n_features=10, n_informative=5, n_cla
         (2,4) # shape of the metrics output
     )
 ])
-def test_class(X, y, classifiers, cv, metric_funcs, preprocess, expected_shape):
+def test_class(X, y, classifiers, cv, metric_funcs, num_pipe, expected_shape):
     """testing all class attributes together"""
+    X = pd.DataFrame(X)
+    preprocess = ColumnTransformer([("num_proc", num_pipe, X.columns.tolist())])
     cmp = BinaryClassifierComparator(X, y, classifiers, cv, metric_funcs, preprocess)
     cmp.run()
     assert cmp.get_metrics().shape == expected_shape
     assert isinstance(cmp.get_best_clf(), BaseEstimator)
-    assert isinstance(cmp.get_preprocess(), Pipeline) and len(cmp.get_preprocess().steps) == 2
+    tmp = cmp.get_preprocess()
+    assert isinstance(tmp, (Pipeline, ColumnTransformer))
+    if isinstance(tmp, Pipeline):
+        assert(len(tmp.steps)) == 2
+    if isinstance(tmp, ColumnTransformer):
+        assert(len(tmp.transformers[0][1].steps) == 2)
 
 
 ####### tests #######
@@ -145,7 +154,7 @@ def test_get_preprocess(preprocess):
     """testing the get_preprocess() function"""
     cmp = BinaryClassifierComparator(X, y, preprocess=preprocess)
     assert cmp.get_preprocess() == preprocess
-    assert type(cmp.get_preprocess()) == Pipeline
+    assert isinstance(cmp.get_preprocess(), (Pipeline, ColumnTransformer))
 
 
 def test_if_preprocess_pipeline():
@@ -164,7 +173,7 @@ def test_if_preprocess_contains_predictor(preprocess):
         cmp = BinaryClassifierComparator(X, y, preprocess=preprocess)
 
 @pytest.mark.parametrize("preprocess", [
-    (Pipeline(steps=[("scaler", StandardScaler()), ("PCA", PCA())]))
+    (Pipeline(steps=[("scaler", StandardScaler()), ("PCA", PCA())])),
 ])
 def test_preprocess_setter(preprocess):
     """testing preprocess setter and getter"""
