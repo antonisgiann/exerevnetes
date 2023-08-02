@@ -7,14 +7,23 @@
 <i>to be implemented</i>
 
 ### Usage (work in progress)
-
-<i>to be implemented</i>
-
-<h4>Submodules</h4>
+<h4>Classification</h4>
 <ul>
-    <li>classification (for classification tasks)</li>
-    <li>regression (for regression tasks)</li>
+    <li>Binary Classification</li>
+   
+    from exerevnetes import BinaryClassifierComparator # import
+
+    cmp = BinaryClassifierComparator(X, y) # basic comparator initialization
+
+    cmp.run() # run the comparator, which at the end displays the results
+
+    cmp.get_metrics() # returns the metrics dataframe sorted by precision 
+
+    cmp.get_best_clf(metric="precision_score") # returns the classifier that achieved the higher score on the metric (by default f1_score is being used)
 </ul>
+<ul>
+    <li>Multiclass classification (to be implemented)</li>
+
 
 ## Contributions
 
