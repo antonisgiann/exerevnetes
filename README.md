@@ -1,6 +1,6 @@
 ## exerevnetes
 
-`exerevnetes` is a python library with the goal to provide a simple and yet comperhensive way for automated model selection. 
+`exerevnetes` is a python library with the goal to provide a simple and yet comperhensive framework for model selection with minimal dependencies.
 
 ### Installation (work in progress)
 
