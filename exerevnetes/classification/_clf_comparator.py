@@ -67,6 +67,8 @@ class BinaryClassifierComparator:
         else:
             if exclude and (not isinstance(exclude, list) or not all(ex in default_classifiers for ex in exclude)):
                 raise ValueError(f"'exclude' must be a list of available default classifiers. All default classifiers are: {list(default_classifiers.keys())}")
+            elif exclude and (len(set(exclude)) != len(exclude)):
+                raise ValueError("'exlucde' must contain unique classifiers.")
 
         if len(X) == 0:
             raise ValueError("An empty array was given for 'X'")

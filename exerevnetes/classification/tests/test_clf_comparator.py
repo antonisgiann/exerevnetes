@@ -118,6 +118,13 @@ def test_classifiers_setter(classifiers, expected):
     assert cmp.get_classifiers() == classifiers
 
 
+@pytest.mark.parametrize("exclude", [(["random_forest", "random_forest"])])
+def test_exclude_uniqueness(exclude):
+    """test if exclude contains unique values"""
+    with pytest.raises(ValueError) as exce:
+        cmp = BinaryClassifierComparator(X, y, exclude=exclude)
+
+
 ####### Preprocess tests #######
 @pytest.mark.parametrize("classifiers, expected", [
         ({"pipe":Pipeline(steps=[("scaler", StandardScaler()), ("model", RandomForestClassifier(n_jobs=-1))])}, 1)
