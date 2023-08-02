@@ -25,9 +25,9 @@ X, y = make_classification(n_samples=1000, n_features=10, n_informative=5, n_cla
         y, # independent variables
         {"forest": RandomForestClassifier(), "extraTrees": ExtraTreesClassifier()}, # classifiers
         7, # cross validation folds
-        [f1_score, roc_auc_score, accuracy_score], # metrics
+        [f1_score, roc_auc_score, accuracy_score], # results
         Pipeline(steps=[("scaler", StandardScaler()), ("pca", PCA())]), # preprocessing pipeline
-        (2,4) # shape of the metrics output
+        (2,4) # shape of the results output
     )
 ])
 def test_class(X, y, classifiers, cv, metric_funcs, num_pipe, expected_shape):
@@ -36,7 +36,7 @@ def test_class(X, y, classifiers, cv, metric_funcs, num_pipe, expected_shape):
     preprocess = ColumnTransformer([("num_proc", num_pipe, X.columns.tolist())])
     cmp = BinaryClassifierComparator(X, y, classifiers, cv, metric_funcs, preprocess)
     cmp.run()
-    assert cmp.get_metrics(sort_by=metric_funcs[0].__name__).shape == expected_shape
+    assert cmp.get_results(sort_by=metric_funcs[0].__name__).shape == expected_shape
     assert isinstance(cmp.get_best_clf(), BaseEstimator)
     tmp = cmp.get_preprocess()
     assert isinstance(tmp, (Pipeline, ColumnTransformer))
@@ -60,11 +60,11 @@ def test_small_sample_size(X, y):
 @pytest.mark.parametrize("X, y, cv, expected", [
     (np.random.randint(0, 100, size=1000).reshape(100,10), np.random.randint(0, 2, size=100).ravel(), 5, (7,6))
     ])
-def test_default_metrics_size(X, y, cv, expected):
-    """test the size of the metrics dataframe"""
+def test_default_results_size(X, y, cv, expected):
+    """test the size of the results dataframe"""
     cmp = BinaryClassifierComparator(X, y, cv=cv)
     cmp.run()
-    assert cmp.get_metrics().shape == expected
+    assert cmp.get_results().shape == expected
 
 
 @pytest.mark.parametrize("X, y",[
@@ -85,16 +85,16 @@ def test_if_run():
         cmp.get_best_clf()
     assert str(exce.value) == "There are no models to compare, you need to run the comparator first."
     with pytest.raises(ValueError) as exce:
-        cmp.get_metrics()
-    assert str(exce.value) == "There are no metrics to be shown, you need to run the comparator first."
+        cmp.get_results()
+    assert str(exce.value) == "There are no results to be shown, you need to run the comparator first."
 
 
 @pytest.mark.parametrize("metric_funcs, expected", [([f1_score, roc_auc_score], 3), ([roc_auc_score], 2)])
-def test_number_of_metrics(metric_funcs, expected):
-    """testing the number of metrics"""
+def test_number_of_results(metric_funcs, expected):
+    """testing the number of results"""
     cmp = BinaryClassifierComparator(X, y, metric_funcs=metric_funcs)
     cmp.run()
-    assert cmp.get_metrics().shape[1] == expected
+    assert cmp.get_results().shape[1] == expected
 
 
 def test_multiple_run_calls():
@@ -103,7 +103,7 @@ def test_multiple_run_calls():
     cmp.run()
     cmp.run()
     cmp.run()
-    assert cmp.get_metrics().dropna().shape == (7,6)
+    assert cmp.get_results().dropna().shape == (7,6)
 
 
 @pytest.mark.parametrize("classifiers, expected", [
@@ -114,7 +114,7 @@ def test_classifiers_setter(classifiers, expected):
     """test the classifiers setter function"""
     cmp = BinaryClassifierComparator(X, y, classifiers)
     cmp.run()
-    assert cmp.get_metrics().shape == expected
+    assert cmp.get_results().shape == expected
     assert cmp.get_classifiers() == classifiers
 
 
@@ -133,17 +133,17 @@ def test_pipelines_as_classifiers(classifiers, expected):
     """test the output of passing a single pipeline for classifiers"""
     cmp = BinaryClassifierComparator(X, y, classifiers=classifiers)
     cmp.run()
-    assert cmp.get_metrics().shape[0] == expected
+    assert cmp.get_results().shape[0] == expected
 
 
 @pytest.mark.parametrize("preprocess, expected", [
     (Pipeline(steps=[("scaler", StandardScaler())]), (7,6))
 ])
-def test_preprocess_attr_metrics(preprocess, expected):
+def test_preprocess_attr_results(preprocess, expected):
     """testing the preprocess attribute"""
     cmp = BinaryClassifierComparator(X, y, preprocess=preprocess)
     cmp.run()
-    assert cmp.get_metrics().shape == expected
+    assert cmp.get_results().shape == expected
 
 
 @pytest.mark.parametrize("preprocess", [
@@ -198,4 +198,4 @@ def test_exclude_attr(exclude):
     cmp = BinaryClassifierComparator(X, y, exclude=exclude)
     cmp.run()
     assert len(cmp.get_classifiers()) == 5
-    assert cmp.get_metrics().shape == (5,6)
+    assert cmp.get_results().shape == (5,6)
