@@ -113,7 +113,7 @@ class BinaryClassifierComparator:
             preds = cross_val_predict(clf, self.X, self.y, cv=self.cv)
             cv_time = time.time() - clf_time
             self._metrics[clf_name] = {"cv_time": cv_time}
-            print((15 - len(clf_name))*" ",f"training time: {time_format(cv_time)}", f",   Since beggining: {time_format(time.time() - initial_time)}")
+            print((25 - len(clf_name))*" ",f"training time: {time_format(cv_time)}", f",   Since beggining: {time_format(time.time() - initial_time)}")
             self.__calculate_scores(clf_name, preds)
 
         # print times and metrics
