@@ -86,7 +86,7 @@ class BinaryClassifierComparator:
     >>> cmp = BinaryClassifierComparator(X, y)
     >>> cmp.run()
     >>> cmp.get_results().shape
-    (6,7) 
+    (7,6) 
     >>> cmp.get_best_clf()
     
     Define the classifiers of your interest
