@@ -17,9 +17,9 @@
 
     cmp.run() # run the comparator, which at the end displays the results
 
-    cmp.get_results() # returns the results dataframe sorted by precision 
+    results = cmp.get_results() # returns the results dataframe
 
-    cmp.get_best_clf(metric="precision_score") # returns the classifier that achieved the higher score on the metric (by default f1_score is being used)
+    clf = cmp.get_best_clf(metric="precision_score") # returns the classifier that achieved the higher metric
 </ul>
 <ul>
     <li>Multiclass classification (to be implemented)</li>
