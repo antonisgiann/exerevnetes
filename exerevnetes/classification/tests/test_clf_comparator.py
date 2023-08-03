@@ -16,7 +16,7 @@ from sklearn.compose import ColumnTransformer
 np.random.seed(47)
 
 # General testing dataset
-X, y = make_classification(n_samples=1000, n_features=10, n_informative=5, n_classes=2, random_state=47)
+X, y = make_classification(n_samples=500, n_features=10, n_informative=5, n_classes=2, random_state=47)
 
 ####### General test #######
 @pytest.mark.parametrize("X, y, classifiers, cv, metric_funcs, num_pipe, expected_shape", [
@@ -180,6 +180,7 @@ def test_if_preprocess_contains_predictor(preprocess):
     with pytest.raises(AttributeError) as exce:
         cmp = BinaryClassifierComparator(X, y, preprocess=preprocess)
 
+
 @pytest.mark.parametrize("preprocess", [
     (Pipeline(steps=[("scaler", StandardScaler()), ("PCA", PCA())])),
 ])
@@ -199,3 +200,13 @@ def test_exclude_attr(exclude):
     cmp.run()
     assert len(cmp.get_classifiers()) == 5
     assert cmp.get_results().shape == (5,6)
+
+
+@pytest.mark.parametrize("exclude", [(["svc", "extra_trees"])])
+def test_exlcude_setter(exclude):
+    """test that you can exclude classifiers after initialization"""
+    cmp = BinaryClassifierComparator(X, y, exclude=None)
+    assert len(cmp.get_classifiers()) == 7
+    cmp.set_exclude(exclude=exclude)
+    cmp.run()
+    assert len(cmp.get_classifiers()) == 5

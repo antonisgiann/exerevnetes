@@ -157,7 +157,7 @@ class BinaryClassifierComparator:
         if classifiers:
             self.classifiers = classifiers
         else:
-            self.classifiers = default_classifiers
+            self.classifiers = default_classifiers.copy()
         self.cv = cv
         self.metric_funcs = metric_funcs
         self.preprocess = preprocess
@@ -167,6 +167,7 @@ class BinaryClassifierComparator:
         if self.exclude:
             for e in self.exclude:
                 self.classifiers.pop(e)
+
         if self.preprocess:
             self.__build_pipelines(self.preprocess)
     
@@ -231,6 +232,21 @@ class BinaryClassifierComparator:
         if self.__preprocess_checks(preprocess):
             self.preprocess = preprocess
             self.__build_pipelines(self.preprocess)
+
+    def set_exclude(self, exclude):
+        """Remove the classifiers that are in the exclude list
+
+        Parameters
+        ----------
+        exclude: list of str
+            The list of the classifiers to be removed from the comparator.
+        """
+        if not all(ex in self.classifiers for ex in exclude):
+            raise ValueError(f"'exclude' should contain only classifiers that are already in the comparator. All current available classifiers are {list(self.classifiers.keys())}")
+        else:
+            self.exclude = exclude
+            for e in exclude:
+                self.classifiers.pop(e)
         
     def get_results(self, sort_by=None, ascending=False):
         if len(self._results) == 0:
@@ -258,3 +274,4 @@ class BinaryClassifierComparator:
             return self.classifiers[self._results.sort_values(by=metric).index[-1]].steps[-1][1]
         else:
             return self.classifiers[self._results.sort_values(by=metric).index[-1]]
+        
