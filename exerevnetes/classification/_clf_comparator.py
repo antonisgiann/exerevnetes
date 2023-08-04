@@ -151,34 +151,34 @@ class BinaryClassifierComparator:
         if preprocess:
             self.__preprocess_checks(preprocess)
 
-        self.X = X
-        self.n_classes = n_classes
-        self.y = y
+        self._X = X
+        self._n_classes = n_classes
+        self._y = y
         if classifiers:
-            self.classifiers = classifiers
+            self._classifiers = classifiers
         else:
-            self.classifiers = default_classifiers.copy()
-        self.cv = cv
-        self.metric_funcs = metric_funcs
-        self.preprocess = preprocess
+            self._classifiers = default_classifiers.copy()
+        self._cv = cv
+        self._metric_funcs = metric_funcs
+        self._preprocess = preprocess
         self._results = {}
-        self.exclude = exclude
+        self._exclude = exclude
         
-        if self.exclude:
-            for e in self.exclude:
-                self.classifiers.pop(e)
+        if self._exclude:
+            for e in self._exclude:
+                self._classifiers.pop(e)
 
-        if self.preprocess:
-            self.__build_pipelines(self.preprocess)
+        if self._preprocess:
+            self.__build_pipelines(self._preprocess)
     
     def run(self):
-        print(f"The comparator has started...\nRunning for {len(self.classifiers)} classifiers")
+        print(f"The comparator has started...\nRunning for {len(self._classifiers)} classifiers")
         self._results = {}
         initial_time = time.time()
-        for i, (clf_name, clf) in enumerate(self.classifiers.items()):
+        for i, (clf_name, clf) in enumerate(self._classifiers.items()):
             print(f"Running cross validation for {i+1}. {clf_name}...", end="")
             clf_time = time.time()
-            preds = cross_val_predict(clf, self.X, self.y, cv=self.cv)
+            preds = cross_val_predict(clf, self._X, self._y, cv=self._cv)
             cv_time = time.time() - clf_time
             self._results[clf_name] = {"cv_time": cv_time}
             print((25 - len(clf_name))*" ",f"training time: {time_format(cv_time)}", f",   Since beggining: {time_format(time.time() - initial_time)}")
@@ -202,36 +202,36 @@ class BinaryClassifierComparator:
         return True
         
     def __calculate_scores(self, clf_name, preds):
-        for m in self.metric_funcs:
-            self._results[clf_name][m.__name__] = m(self.y, preds)
+        for m in self._metric_funcs:
+            self._results[clf_name][m.__name__] = m(self._y, preds)
 
     def __format_results(self):
         self._results = pd.DataFrame(self._results).T
 
     def __build_pipelines(self, preprocess):
-        for clf_name, clf in self.classifiers.items():
+        for clf_name, clf in self._classifiers.items():
             if isinstance(preprocess, Pipeline):
                 tmp_pipe = clone(preprocess)
                 tmp_pipe.steps.append(("model", clf))
-                self.classifiers[clf_name] = tmp_pipe
+                self._classifiers[clf_name] = tmp_pipe
             elif isinstance(preprocess, ColumnTransformer):
-                self.classifiers[clf_name] = Pipeline(steps=[("preproc", preprocess), ("model", clf)])
+                self._classifiers[clf_name] = Pipeline(steps=[("preproc", preprocess), ("model", clf)])
 
     def set_classifiers(self, classifiers):
         if classifiers == None:
             raise ValueError("'classifiers' is None.")
         if not isinstance(classifiers, dict):
             raise TypeError("'classifiers' must be a dictionary.")
-        self.classifiers = classifiers
-        if self.preprocess:
-            self.__build_pipelines(self.preprocess)
+        self._classifiers = classifiers
+        if self._preprocess:
+            self.__build_pipelines(self._preprocess)
 
     def set_preprocess(self, preprocess):
         if preprocess == None:
             raise ValueError("'preprocess' is None.")
         if self.__preprocess_checks(preprocess):
-            self.preprocess = preprocess
-            self.__build_pipelines(self.preprocess)
+            self._preprocess = preprocess
+            self.__build_pipelines(self._preprocess)
 
     def set_exclude(self, exclude):
         """Remove the classifiers that are in the exclude list
@@ -241,37 +241,37 @@ class BinaryClassifierComparator:
         exclude: list of str
             The list of the classifiers to be removed from the comparator.
         """
-        if not all(ex in self.classifiers for ex in exclude):
-            raise ValueError(f"'exclude' should contain only classifiers that are already in the comparator. All current available classifiers are {list(self.classifiers.keys())}")
+        if not all(ex in self._classifiers for ex in exclude):
+            raise ValueError(f"'exclude' should contain only classifiers that are already in the comparator. All current available classifiers are {list(self._classifiers.keys())}")
         else:
-            self.exclude = exclude
+            self._exclude = exclude
             for e in exclude:
-                self.classifiers.pop(e)
+                self._classifiers.pop(e)
         
     def get_results(self, sort_by=None, ascending=False):
         if len(self._results) == 0:
             raise ValueError("There are no results to be shown, you need to run the comparator first.")
         if sort_by:
-            if sort_by in [f.__name__ for f in self.metric_funcs]:
+            if sort_by in [f.__name__ for f in self._metric_funcs]:
                 return self._results.sort_values(by=sort_by, ascending=ascending)
             else:
-                raise ValueError(f"'{sort_by}' is not an available metric. Please choose one of {[f.__name__ for f in self.metric_funcs]}")
+                raise ValueError(f"'{sort_by}' is not an available metric. Please choose one of {[f.__name__ for f in self._metric_funcs]}")
         else:
             return self._results
             
     def get_preprocess(self):
-        if not self.preprocess:
+        if not self._preprocess:
             warnings.warn("The preprocess attribute is \033[1mNone\033[0m.", UserWarning)
-        return self.preprocess
+        return self._preprocess
     
     def get_classifiers(self):
-        return self.classifiers
+        return self._classifiers
 
     def get_best_clf(self, metric="f1_score"):
         if len(self._results) == 0:
             raise ValueError("There are no models to compare, you need to run the comparator first.")
-        if self.preprocess:
-            return self.classifiers[self._results.sort_values(by=metric).index[-1]].steps[-1][1]
+        if self._preprocess:
+            return self._classifiers[self._results.sort_values(by=metric).index[-1]].steps[-1][1]
         else:
-            return self.classifiers[self._results.sort_values(by=metric).index[-1]]
+            return self._classifiers[self._results.sort_values(by=metric).index[-1]]
         
