@@ -210,3 +210,14 @@ def test_exlcude_setter(exclude):
     cmp.set_exclude(exclude=exclude)
     cmp.run()
     assert len(cmp.get_classifiers()) == 5
+
+@pytest.mark.parametrize("metric_funcs", [([f1_score, accuracy_score]), ([lambda x,y: [x**2,y**2]])])
+def test_metric_funcs_setter(metric_funcs):
+    cmp = BinaryClassifierComparator(X, y)
+    if len(metric_funcs) == 1:
+        with pytest.raises(TypeError) as exce:
+            cmp.set_metric_funcs(metric_funcs)
+    else:
+        cmp.set_metric_funcs(metric_funcs)
+        cmp.run()
+        assert cmp.get_results().shape[1] == 3
