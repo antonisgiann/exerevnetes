@@ -247,6 +247,19 @@ class BinaryClassifierComparator:
             self._exclude = exclude
             for e in exclude:
                 self._classifiers.pop(e)
+    
+    def set_metric_funcs(self, metric_funcs):
+        if not isinstance(metric_funcs, list):
+            raise TypeError("Please provide a list of functions.")
+        for m in metric_funcs:
+            if not callable(m):
+                raise TypeError("'metric_funcs' must be a list of functions.")
+            try:
+                assert isinstance(m(self._y, self._y), (int, float))
+            except:
+                raise TypeError("'metric_funcs' should be a list of metric functions for binary classification.")
+        self._metric_funcs = metric_funcs
+        
         
     def get_results(self, sort_by=None, ascending=False):
         if len(self._results) == 0:
