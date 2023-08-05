@@ -278,6 +278,13 @@ class BinaryClassifierComparator:
         return self._preprocess
     
     def get_classifiers(self):
+        """ Returns the dictionary of the classifiers of the comparator
+        
+        Returns
+        -------
+        self._classifiers: dict of tuples ("name", classifier)
+            Dictionary with all the classfiers used by the comparator
+        """
         return self._classifiers
 
     def get_best_clf(self, metric="f1_score"):
