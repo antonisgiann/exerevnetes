@@ -211,6 +211,7 @@ def test_exlcude_setter(exclude):
     cmp.run()
     assert len(cmp.get_classifiers()) == 5
 
+
 @pytest.mark.parametrize("metric_funcs", [([f1_score, accuracy_score]), ([lambda x,y: [x**2,y**2]])])
 def test_metric_funcs_setter(metric_funcs):
     cmp = BinaryClassifierComparator(X, y)
@@ -221,3 +222,14 @@ def test_metric_funcs_setter(metric_funcs):
         cmp.set_metric_funcs(metric_funcs)
         cmp.run()
         assert cmp.get_results().shape[1] == 3
+
+
+@pytest.mark.parametrize("metric", [("jiberish"), ("roc_auc_score")])
+def test_get_best_clf(metric):
+    cmp = BinaryClassifierComparator(X, y)
+    cmp.run()
+    if metric == "jiberish":
+        with pytest.raises(ValueError) as exce:
+            cmp.get_best_clf(metric=metric)
+    else:
+        cmp.get_best_clf(metric=metric)
