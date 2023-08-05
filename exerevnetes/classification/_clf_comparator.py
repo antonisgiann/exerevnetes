@@ -300,6 +300,8 @@ class BinaryClassifierComparator:
         best_classifier : classifier object
             The best-performing classifier based on the specified metric
         """
+        if not metric in [f.__name__ for f in self._metric_funcs]:
+            raise ValueError(f"'{metric}' is not a valid option. Please choose on of f{[f.__name__ for f in self._metric_funcs]}")
         if len(self._results) == 0:
             raise ValueError("There are no models to compare, you need to run the comparator first.")
         if self._preprocess:
