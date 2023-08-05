@@ -281,6 +281,18 @@ class BinaryClassifierComparator:
         return self._classifiers
 
     def get_best_clf(self, metric="f1_score"):
+        """ Returns the best-performing classifier based on a specified metric.
+
+        Parameters
+        ----------
+        metric : str, optional
+            The name of the metric used to determine the best classifier. The default metric is "f1_score".
+
+        Returns
+        -------
+        best_classifier : classifier object
+            The best-performing classifier based on the specified metric
+        """
         if len(self._results) == 0:
             raise ValueError("There are no models to compare, you need to run the comparator first.")
         if self._preprocess:
@@ -289,6 +301,12 @@ class BinaryClassifierComparator:
             return self._classifiers[self._results.sort_values(by=metric).index[-1]]
         
     def get_metric_funcs(self):
-        """ Return the list with all the metric functions """
+        """ Return the list with all the metric functions 
+        
+        Returns
+        -------
+        self._metric_funcs: list 
+            list of metric functions to be used for the comparator 
+        """
         return self._metric_funcs
         
