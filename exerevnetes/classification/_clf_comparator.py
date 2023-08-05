@@ -288,3 +288,7 @@ class BinaryClassifierComparator:
         else:
             return self._classifiers[self._results.sort_values(by=metric).index[-1]]
         
+    def get_metric_funcs(self):
+        """ Return the list with all the metric functions """
+        return self._metric_funcs
+        
