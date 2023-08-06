@@ -262,6 +262,20 @@ class BinaryClassifierComparator:
         
         
     def get_results(self, sort_by=None, ascending=False):
+        """Return the results of the comparator
+
+        Parameters
+        ----------
+        sort_by: str, optional
+            Name of the metric used to determie the sorting of the results dataframe
+        asceding: bool, optional
+            Defines the order of the sorting if a sorting is being done
+
+        Returns
+        -------
+        self._results: pd.DataFrame
+            Dataframe containing the results of the comparator
+        """
         if len(self._results) == 0:
             raise ValueError("There are no results to be shown, you need to run the comparator first.")
         if sort_by:
