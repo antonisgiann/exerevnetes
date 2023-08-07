@@ -249,6 +249,13 @@ class BinaryClassifierComparator:
                 self._classifiers.pop(e)
     
     def set_metric_funcs(self, metric_funcs):
+        """Set the metric_funcs of the comparator
+
+        Parameters
+        ----------
+        metric_funcs: list of functions
+            List of functions that return a metric for binary classification and set the self._metric_funcs attribute
+        """
         if not isinstance(metric_funcs, list):
             raise TypeError("Please provide a list of functions.")
         for m in metric_funcs:
