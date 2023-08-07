@@ -294,6 +294,13 @@ class BinaryClassifierComparator:
             return self._results
             
     def get_preprocess(self):
+        """Return the preprocess if it exists
+
+        Returns
+        -------
+        self._preprocess: sklearn.pipeline.Pipeline or sklearn.compose.ColumnTransformer object
+            The preprocessing that is being used before the classifier in the comparator
+        """
         if not self._preprocess:
             warnings.warn("The preprocess attribute is \033[1mNone\033[0m.", UserWarning)
         return self._preprocess
