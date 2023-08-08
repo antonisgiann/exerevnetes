@@ -227,6 +227,13 @@ class BinaryClassifierComparator:
             self.__build_pipelines(self._preprocess)
 
     def set_preprocess(self, preprocess):
+        """Set the preprocess steps of the comparator
+
+        Parameters
+        ----------
+        preprocess: sklearn.pipeline.Pipeline or sklearn.compose.ColumnTransformer object
+            The preprocessing steps to be used before each classifier in the comparator.
+        """
         if preprocess == None:
             raise ValueError("'preprocess' is None.")
         if self.__preprocess_checks(preprocess):
