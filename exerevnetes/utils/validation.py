@@ -46,7 +46,7 @@ class Validator(ABC):
             raise ValueError(f"There is a mismatch between 'X' and 'y'. 'X' has shape {X.shape} and 'y' has shape {y.shape}")
         return True
     
-    def run_base(self):
+    def run_base_validation(self):
         self.__validate_estimators_param(self.estimators)
         self.__validate_not_empty(self.X, self.y)
         self.__validate_cv_param(self.cv)

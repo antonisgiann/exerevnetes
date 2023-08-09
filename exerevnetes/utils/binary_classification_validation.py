@@ -43,7 +43,7 @@ class BinaryClassificationValidator(Validator):
             return True
         
     def validate(self):
-        base_val = self.run_base()
+        base_val = self.run_base_validation()
         if self.y != None:
             base_val = base_val and self.__validate_binary_classification(self.y) 
         if self.exclude != None:
