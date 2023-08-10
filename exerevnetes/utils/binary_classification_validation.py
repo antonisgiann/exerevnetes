@@ -1,4 +1,4 @@
-from exerevnetes.utils.validation import Validator
+from exerevnetes.base_validation import Validator
 from collections import Counter
 from sklearn.ensemble import RandomForestClassifier, ExtraTreesClassifier
 from sklearn.linear_model import LogisticRegression
@@ -20,12 +20,12 @@ default_estimators = {
 
 
 class BinaryClassificationValidator(Validator):
-    def __init__(self, X=None, y=None, estimators=None, cv=None, metric_funcs=None, exclude=None):
-        super().__init__(X, y, estimators, cv, metric_funcs, exclude)
+    def __init__(self, X=None, y=None, estimators=None, cv=None, metric_funcs=None, preprocess=None, exclude=None):
+        super().__init__(X, y, estimators, cv, metric_funcs, preprocess, exclude)
     
     @classmethod
     def __validate_binary_classification(cls, y):
-        if y:
+        if y is not None:
             n_classes = Counter(y)
             if len(n_classes) != 2:
                 raise ValueError(f"Expected 2 classes but got {n_classes} classes.")
@@ -44,9 +44,9 @@ class BinaryClassificationValidator(Validator):
         
     def validate(self):
         base_val = self.run_base_validation()
-        if self.y != None:
+        if self.y is not None:
             base_val = base_val and self.__validate_binary_classification(self.y) 
-        if self.exclude != None:
+        if self.exclude is not None:
             base_val = base_val and self.__validate_exclude_param(self.estimators, self.exclude)
         return base_val
         
