@@ -1,1 +1,1 @@
-from ._clf_comparator import BinaryClassifierComparator
+from .binary_comparator import BinaryClassificationComparator
