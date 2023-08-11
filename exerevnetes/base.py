@@ -7,8 +7,6 @@ from abc import ABC
 from .utils import time_format
 
 from sklearn.model_selection import cross_val_predict
-from sklearn.pipeline import Pipeline
-from sklearn.compose import ColumnTransformer
 
 
 
@@ -37,7 +35,14 @@ class BaseComparator(ABC):
 
     @classmethod
     def __get_params_names(cls):
-        """Get the parameter names of the comparator"""
+        """Get the parameter names of the comparator
+        
+        Returns
+        -------
+        list of str
+            A sorted list of strings with the names of the parameters given
+            to the constructor of the class
+        """
         init = getattr(cls.__init__, "deprecated_original", cls.__init__)
         init_ins = inspect.signature(init)
         parameters = [
