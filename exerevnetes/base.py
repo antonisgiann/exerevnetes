@@ -52,6 +52,15 @@ class BaseComparator(ABC):
     
     @classmethod
     def __format_results(clf, results):
+        """Format the results of the comparator from a dictionary to
+        a pd.DataFrame with the estimator identifiers as index and 
+        the metrics as columns
+        
+        Returns
+        -------
+        pd.DataFrame
+            The results of the comparator
+        """
         return pd.DataFrame(results).T
 
     def __calculate_scores(self, clf_name, preds):
