@@ -11,6 +11,7 @@ from sklearn.model_selection import cross_val_predict
 
 
 class BaseComparator(ABC):
+    """Base abstract class that provides the basic functionalities of every comparator"""
     def __init__(self,
             X,
             y, 
@@ -22,7 +23,7 @@ class BaseComparator(ABC):
             Validator
     ):
         self.Validator = Validator
-        validate_params = Validator(X, y, estimators, cv, metric_funcs, preprocess, exclude)
+        validate_params = self.Validator(X, y, estimators, cv, metric_funcs, preprocess, exclude)
         if validate_params.validate():
             self.X = X
             self.y = y
