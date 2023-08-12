@@ -78,6 +78,21 @@ class BaseComparator(ABC):
             self._results[clf_name][m.__name__] = m(self.y, preds)
     
     def get_params(self, *args, dataset=False):
+        """ Returns all parameters of the comparator
+        
+        Parameters
+        ----------
+        *args: str 
+            Parameter names as str
+        dataset: bool, optional
+            Determines if X, y will be included in the returned dictionary
+            
+        Returns
+        -------
+        out: dict
+            Dictionary that contains all the values of the parameters with the name of the
+            parameter as key and the value of the parameter as value
+        """
         out = dict()
         if args:
             for k in args:
