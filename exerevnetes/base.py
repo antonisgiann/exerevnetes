@@ -65,6 +65,15 @@ class BaseComparator(ABC):
         return pd.DataFrame(results).T
 
     def __calculate_scores(self, clf_name, preds):
+        """Calculate all scores of the estimator
+        
+        Parameters
+        ----------
+        clf_name: str
+            The identifier - name of the estimator
+        preds: one dimensional array like or list
+            It is the cross validation predictions on unseen data
+        """
         for m in self.metric_funcs:
             self._results[clf_name][m.__name__] = m(self.y, preds)
     
