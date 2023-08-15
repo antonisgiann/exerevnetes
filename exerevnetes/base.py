@@ -147,6 +147,8 @@ class BaseComparator(ABC):
                 f"invalid params {param}. "
                 f"Valid params {self._get_params_names()!r}"
             )
+        
+        return self
     
     def get_results(self, sort_by, ascending=False):
         """Return the results of the comparator
