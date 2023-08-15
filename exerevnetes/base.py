@@ -128,6 +128,13 @@ class BaseComparator(ABC):
             return self.estimators[self._results.sort_values(by=metric).index[-1]]
         
     def set_params(self, **kargs):
+        """ Set the parameters of the comparator
+        
+        Parameters
+        ----------
+        **kargs: dict, {str: value} {"name_of_the_parameter": value}
+            Comparator parameters
+        """
         valid_params = self.get_params()
         if all(k in valid_params for k in kargs) and self.Validator(**kargs).validate():
             for param, value in kargs.items():
