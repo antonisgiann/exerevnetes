@@ -134,6 +134,11 @@ class BaseComparator(ABC):
         ----------
         **kargs: dict, {str: value} {"name_of_the_parameter": value}
             Comparator parameters
+
+        Returns
+        -------
+        self: comparator instance
+            Comparator instance
         """
         valid_params = self.get_params()
         if all(k in valid_params for k in kargs) and self.Validator(**kargs).validate():
