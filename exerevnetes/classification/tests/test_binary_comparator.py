@@ -36,6 +36,7 @@ X_df.columns = X_df.columns.astype(str)
     )
 ])
 def test_general_class_functionality(X, y, estimators, cv, metric_funcs, prepro, expected_shape):
+    """ Run a general test with most of the attributes set in the constructor """
     cmp = BinaryClassificationComparator(X, y, estimators, cv, metric_funcs, prepro)
     cmp.run()
     assert cmp.get_results(sort_by="f1_score").dropna().shape == expected_shape
@@ -43,6 +44,7 @@ def test_general_class_functionality(X, y, estimators, cv, metric_funcs, prepro,
 
 
 def test_default_params():
+    """ Run a test with all default values for the comparator """
     cmp = BinaryClassificationComparator(X, y)
     cmp.run()
     assert cmp._results.dropna().shape == (7,6)
