@@ -111,6 +111,8 @@ class BinaryClassificationComparator(BaseComparator):
                 self.__build_pipelines()
 
     def __build_pipelines(self):
+        """ If ``preprocess`` was given, build pipelines by appending the estimators
+        at the end of the preprocessing steps in the ``preprocess``"""
         for est_name, est in self.estimators.items():
             if isinstance(self.preprocess, Pipeline):
                 tmp_pipe = clone(self.preprocess)
