@@ -101,6 +101,7 @@ def test_exlcude_setter(exclude):
 
 
 def test_set_params_validation():
+    """test setting wrong estimator object and wrong metric_funcs object"""
     cmp = BinaryClassificationComparator(X, y)
     with pytest.raises(TypeError) as exce:
         cmp.set_params(estimators=[])
@@ -112,6 +113,7 @@ def test_set_params_validation():
 
 @pytest.mark.parametrize("metric", [("jiberish"), ("roc_auc_score")])
 def test_get_best_clf(metric):
+    """test getting best clf with wrong metric and with correct metric"""
     cmp = BinaryClassificationComparator(X, y)
     cmp.run()
     if metric == "jiberish":
