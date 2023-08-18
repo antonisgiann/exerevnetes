@@ -178,6 +178,11 @@ class BaseComparator(ABC):
             raise ValueError(f"'{sort_by}' is not an available metric. Please choose one of {[f.__name__ for f in self._metric_funcs]}")
 
     def run(self):
+        """Use cross validation on all estimators to produce clean predictions
+        on unseen data. Then use these predictions to calculate all metrics in
+        the ``metric_funcs`` list. Save the results in a dataframe and display
+        the results at the end.
+        """
         print(f"The comparator has started...\nRunning for {len(self.estimators)} estimators")
         self._results = {}
         initial_time = time.time()
