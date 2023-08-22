@@ -3,7 +3,6 @@ from exerevnetes.utils.binary_classification_validation import BinaryClassificat
 from sklearn.ensemble import RandomForestClassifier, ExtraTreesClassifier
 from sklearn.metrics import f1_score, roc_auc_score
 from sklearn.pipeline import Pipeline
-from sklearn.compose import ColumnTransformer
 from sklearn.datasets import make_classification
 from sklearn.preprocessing import StandardScaler
 
