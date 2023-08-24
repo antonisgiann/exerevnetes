@@ -2,6 +2,14 @@
 
 `exerevnetes` is a python library with the goal to provide a simple and yet comperhensive framework for model selection with minimal dependencies.
 
+## Table of contents
+
+- [Table of conents](#table-of-contents)
+- [Installation](#installation-work-in-progress)
+- [Usage](#usage-work-in-progress)
+- [Contributions](#contributions)
+- [Local Setup - Development](#local-setup---development)
+
 ### Installation (work in progress)
 
 <i>to be implemented</i>
@@ -23,13 +31,14 @@
 </ul>
 <ul>
     <li>Multiclass classification (to be implemented)</li>
+</ul>
 
 
 ## Contributions
 
 This is an open source project and I welcome any contributions - ideas
 
-### Local Setup - Development
+## Local Setup - Development
 
 1. Clone the repository locally
 
