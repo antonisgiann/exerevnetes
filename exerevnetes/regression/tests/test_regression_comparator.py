@@ -27,4 +27,4 @@ def test_general_class_functionality(X, y, estimators, cv, metric_funcs, prepro,
     """ run a general test with most of attributes set"""
     cmp = RegressionComparator(X, y, estimators, cv, metric_funcs, prepro)
     cmp.run()
-    assert cmp._results.shape == expected_shape
+    assert cmp.results_.shape == expected_shape
