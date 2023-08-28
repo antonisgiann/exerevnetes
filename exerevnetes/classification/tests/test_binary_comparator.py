@@ -39,7 +39,7 @@ def test_general_class_functionality(X, y, estimators, cv, metric_funcs, prepro,
     """ Run a general test with most of the attributes set in the constructor """
     cmp = BinaryClassificationComparator(X, y, estimators, cv, metric_funcs, prepro)
     cmp.run()
-    assert cmp.get_results(sort_by="f1_score").dropna().shape == expected_shape
+    assert cmp.getresults_(sort_by="f1_score").dropna().shape == expected_shape
     assert isinstance(cmp.get_params("preprocess")["preprocess"], (Pipeline, ColumnTransformer))
 
 
@@ -47,7 +47,7 @@ def test_default_params():
     """ Run a test with all default values for the comparator """
     cmp = BinaryClassificationComparator(X, y)
     cmp.run()
-    assert cmp._results.dropna().shape == (7,6)
+    assert cmp.results_.dropna().shape == (7,6)
     m_f = cmp.get_params("metric_funcs")["metric_funcs"]
     assert isinstance(m_f, list) and len(m_f) == 5
     params =  cmp.get_params()
@@ -61,7 +61,7 @@ def test_multiple_run_calls():
     cmp.run()
     cmp.run()
     cmp.run()
-    assert cmp._results.dropna().shape == (7,6)
+    assert cmp.results_.dropna().shape == (7,6)
 
 
 @pytest.mark.parametrize("exclude", [(["random_forest", "random_forest"])])
@@ -78,7 +78,7 @@ def test_pipelines_as_classifiers(estimators, expected):
     """test the output of passing a single pipeline for classifiers"""
     cmp = BinaryClassificationComparator(X, y, estimators=estimators)
     cmp.run()
-    assert cmp._results.dropna().shape[0] == expected
+    assert cmp.results_.dropna().shape[0] == expected
 
 
 @pytest.mark.parametrize("preprocess", [

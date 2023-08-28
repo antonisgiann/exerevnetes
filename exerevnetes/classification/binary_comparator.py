@@ -118,7 +118,7 @@ class BinaryClassificationComparator(BaseComparator):
                 tmp_pipe = clone(self.preprocess)
                 if isinstance(tmp_pipe.steps, list):
                     tmp_pipe.steps.append(("model", est))
-                if isinstance(tmp_pipe.steps, tuple):
+                elif isinstance(tmp_pipe.steps, tuple):
                     tmp_pipe.steps = [tmp_pipe.steps, ("model", est)]
                 self.estimators[est_name] = tmp_pipe
             elif isinstance(self.preprocess, ColumnTransformer):

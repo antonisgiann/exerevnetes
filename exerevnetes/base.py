@@ -32,7 +32,7 @@ class BaseComparator(ABC):
             self.metric_funcs = metric_funcs
             self.preprocess = preprocess
             self.exclude = exclude
-            self._results = {}
+            self.results_ = {}
 
     @classmethod
     def __get_params_names(cls):
@@ -52,7 +52,7 @@ class BaseComparator(ABC):
         return sorted([p.name for p in parameters])
     
     @classmethod
-    def __format_results(clf, results):
+    def __formatresults_(clf, results):
         """Format the results of the comparator from a dictionary to
         a pd.DataFrame with the estimator identifiers as index and 
         the metrics as columns
@@ -75,7 +75,7 @@ class BaseComparator(ABC):
             It is the cross validation predictions on unseen data
         """
         for m in self.metric_funcs:
-            self._results[clf_name][m.__name__] = m(self.y, preds)
+            self.results_[clf_name][m.__name__] = m(self.y, preds)
     
     def get_params(self, *args, dataset=False):
         """ Returns all parameters of the comparator
@@ -120,12 +120,12 @@ class BaseComparator(ABC):
         """
         if not metric in [f.__name__ for f in self.metric_funcs]:
             raise ValueError(f"'{metric}' is not a valid option. Please choose on of f{[f.__name__ for f in self.metric_funcs]}")
-        if len(self._results) == 0:
+        if len(self.results_) == 0:
             raise ValueError("There are no models to compare, you need to run the comparator first.")
         if self.preprocess:
-            return self.estimators[self._results.sort_values(by=metric).index[-1]].steps[-1][1]
+            return self.estimators[self.results_.sort_values(by=metric).index[-1]].steps[-1][1]
         else:
-            return self.estimators[self._results.sort_values(by=metric).index[-1]]
+            return self.estimators[self.results_.sort_values(by=metric).index[-1]]
         
     def set_params(self, **kargs):
         """ Set the parameters of the comparator
@@ -155,7 +155,7 @@ class BaseComparator(ABC):
         
         return self
     
-    def get_results(self, sort_by, ascending=False):
+    def getresults_(self, sort_by, ascending=False):
         """Return the results of the comparator
 
         Parameters
@@ -167,13 +167,13 @@ class BaseComparator(ABC):
 
         Returns
         -------
-        self._results: pd.DataFrame
+        self.results_: pd.DataFrame
             Dataframe containing the results of the comparator
         """
-        if len(self._results) == 0:
+        if len(self.results_) == 0:
             raise ValueError("There are no results to be shown, you need to run the comparator first.")
         if sort_by in [f.__name__ for f in self.metric_funcs]:
-            return self._results.sort_values(by=sort_by, ascending=ascending)
+            return self.results_.sort_values(by=sort_by, ascending=ascending)
         else:
             raise ValueError(f"'{sort_by}' is not an available metric. Please choose one of {[f.__name__ for f in self._metric_funcs]}")
 
@@ -184,18 +184,18 @@ class BaseComparator(ABC):
         the results at the end.
         """
         print(f"The comparator has started...\nRunning for {len(self.estimators)} estimators")
-        self._results = {}
+        self.results_ = {}
         initial_time = time.time()
         for i, (est_name, est) in enumerate(self.estimators.items()):
             print(f"Running cross validation for {i+1}. {est_name}...", end="")
             clf_time = time.time()
             preds = cross_val_predict(est, self.X, self.y, cv=self.cv)
             cv_time = time.time() - clf_time
-            self._results[est_name] = {"cv_time": cv_time}
+            self.results_[est_name] = {"cv_time": cv_time}
             print((25 - len(est_name))*" ",f"training time: {time_format(cv_time)}", f",   Since beggining: {time_format(time.time() - initial_time)}")
             self.__calculate_scores(est_name, preds)
 
         # print times and results
         print(f"Total comparator time {time_format(time.time() - initial_time)}")
-        self._results = self.__format_results(self._results)
-        display(self._results)
+        self.results_ = self.__formatresults_(self.results_)
+        display(self.results_)
