@@ -1,5 +1,5 @@
 from exerevnetes.base import BaseComparator
-from exereventes.utils.regression_validation import RegressionValidator, default_estimators
+from exerevnetes.utils.regression_validation import RegressionValidator, default_estimators
 
 from copy import deepcopy
 
