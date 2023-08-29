@@ -28,3 +28,9 @@ def test_general_class_functionality(X, y, estimators, cv, metric_funcs, prepro,
     cmp = RegressionComparator(X, y, estimators, cv, metric_funcs, prepro)
     cmp.run()
     assert cmp.results_.shape == expected_shape
+
+
+@pytest.mark.parametrize("estimators", [([]), ({})])
+def test_wrong_estimators(estimators):
+    with pytest.raises(Exception):
+        cmp = RegressionComparator(X, y, estimators=estimators)
