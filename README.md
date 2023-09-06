@@ -2,6 +2,8 @@
 
 `exerevnetes` is a python library with the goal to provide a simple and yet comperhensive framework for model and pipeline comparison with minimal dependencies.
 
+**⚠️ Note: For a more full - capable library please see <a href=https://pycaret.org/>pycaret</a>.**
+
 ## Table of contents
 
 - [Table of conents](#table-of-contents)
