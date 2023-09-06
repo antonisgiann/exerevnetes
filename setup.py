@@ -16,7 +16,7 @@ setup(
     version=version,
     author='Antonios Giannoulopoulos',
     author_email="antgiannoulopoulos@gmail.com",
-    description='Another auto machine learning implementation, the goal is to create a simple yet comperhensive library that automates model selection',
+    description='A machine learning algorithm comparator, the goal is to create a simple yet comperhensive that helps with model selection',
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/carnivore7777/exerevnetes",
