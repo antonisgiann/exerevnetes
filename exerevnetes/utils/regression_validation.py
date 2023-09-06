@@ -31,6 +31,17 @@ class RegressionValidator(Validator):
                 raise ValueError(f"`y` looks like a discrete variable.`")
         return True
     
+    @classmethod
+    def __validate_exclude_param(cls, estimators, exclude):
+        if estimators and exclude:
+            raise AttributeError("You can't use the 'exclude' attribute when passing 'estimators'")
+        elif exclude and (not isinstance(exclude, list) or not all(ex in default_estimators for ex in exclude)):
+            raise ValueError(f"'exclude' must be a list of available default estimators. All default estimators are: {list(default_estimators.keys())}")
+        elif exclude and (len(set(exclude)) != len(exclude)):
+            raise ValueError("'exlucde' must contain unique estimators.")
+        else:
+            return True
+    
     def validate(self):
         base_val = self.run_base_validation()
         if self.y is not None:
