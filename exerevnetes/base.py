@@ -155,7 +155,7 @@ class BaseComparator(ABC):
         
         return self
     
-    def getresults_(self, sort_by, ascending=False):
+    def get_results_(self, sort_by, ascending=False):
         """Return the results of the comparator
 
         Parameters
