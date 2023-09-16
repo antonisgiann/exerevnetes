@@ -29,12 +29,24 @@
 
     results = cmp.get_results() # returns the results dataframe
 
-    clf = cmp.get_best_clf(metric="precision_score") # returns the classifier that achieved the higher metric
+    clf = cmp.get_best(metric="precision_score") # returns the classifier that achieved the higher metric
 </ul>
 <ul>
     <li>Multiclass classification (to be implemented)</li>
 </ul>
+<ul>
+    <li>Regression</li>
+    
+    from exerevnetes import RegressionComparator # import
 
+    cmp = RegressionComparator(X, y) # basic comparator initialization
+
+    cmp.run() # run the comparator, which at the end displays the results
+
+    results = cmp.get_results() # returns the results dataframe
+
+    est = cmp.get_best(metric="mean_absolute_error")
+</ul>
 
 ## Contributions
 
