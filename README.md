@@ -7,10 +7,21 @@
 ## Table of contents
 
 - [Table of conents](#table-of-contents)
+- [Requirements](#requirements)
 - [Installation](#installation-work-in-progress)
 - [Usage](#usage-work-in-progress)
 - [Contributions](#contributions)
 - [Local Setup - Development](#local-setup---development)
+
+### Requirements
+
+- The library expects a preprocessed dataset in the form of <b>X</b> (independent variables) and <b>y</b> (dependent variable).
+- X and y should be split and be given to the constructor as seperate arguments.
+- The only mandatory arguments for the comparator to run are <b>Χ</b> and <b>y</b>. All other arguments have predefined values.
+- Every estimator used should be scikit-learn compatible and be able to be used in [cross val predict](https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.cross_val_predict.html).
+- If the dataset is not preprocessed there is a <b>preprocess</b> argument that can be set to the user defined preprocessing.
+- If an argument is used then it should not be empty (e.g. estimators, preprocess, exclude).
+- The expected output after the execution of <b>run()</b> is some run time information about the algorithm that is being tested and training times and a pandas dataframe at the end showing all the metrics for each algorithm that was tested.
 
 ### Installation (work in progress)
 
